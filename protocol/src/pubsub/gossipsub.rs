@@ -21,6 +21,7 @@
 //! It implemented using libp2p Gossipsub for effective message delivery.
 //!
 
+use cdr::{CdrBe, Infinite};
 use futures::{
     channel::{mpsc, oneshot},
     executor::block_on,
@@ -155,6 +156,8 @@ impl PubSubWorker {
 
     fn publish(&mut self, topic_name: String, message: Vec<u8>) -> Result<bool> {
         let topic = Topic::new(topic_name.clone());
+        // Pack message to CDR format for ROS compatibility
+        let message = cdr::serialize::<_, _, CdrBe>(&message, Infinite).unwrap();
         self.swarm.behaviour_mut().publish(topic.clone(), message)?;
         log::debug!(target: "robonomics-pubsub", "Publish to {}", topic_name);
 
