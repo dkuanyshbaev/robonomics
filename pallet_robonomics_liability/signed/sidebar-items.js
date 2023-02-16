@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["AppProofSigner","Runtime AppCrypto proof builder."],["ProofSigner","Core crypto proof builder."],["SignedAgreement","Agreement that could be proven by asymmetric cryptography."],["SignedReport","Report that could be proven by asymmetric cryptography."]]};

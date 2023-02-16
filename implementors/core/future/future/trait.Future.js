@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["robonomics_protocol"] = [{"text":"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html\" title=\"trait core::future::future::Future\">Future</a> for <a class=\"struct\" href=\"robonomics_protocol/network/worker/struct.NetworkWorker.html\" title=\"struct robonomics_protocol::network::worker::NetworkWorker\">NetworkWorker</a>","synthetic":false,"types":["robonomics_protocol::network::worker::NetworkWorker"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

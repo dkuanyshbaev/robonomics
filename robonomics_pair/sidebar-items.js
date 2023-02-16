@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":[["error","Errors that can occur during the I/O operations."],["pair","Virtual sinkable devices."]]};

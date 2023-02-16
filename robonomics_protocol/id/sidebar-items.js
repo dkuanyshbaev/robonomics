@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":[["load","Load ED25519 keypair for node identity from file."],["random","Generate random ED25519 keypair for node identity."],["save","Save node identity ED25519 keypair at path given."]]};

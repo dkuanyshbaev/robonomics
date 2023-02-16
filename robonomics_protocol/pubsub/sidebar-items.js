@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":[["ToWorkerMsg",""]],"struct":[["Message","Robonomics PubSub message."],["Pubsub","LibP2P Gossipsub based publisher/subscriber service."]],"trait":[["PubSub","Robonomics Publisher/Subscriber."]],"type":[["Inbox","Stream of incoming messages."]]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":[["Error","Robonomics sensors errors."]],"type":[["Result","Sensor Result typedef."]]};

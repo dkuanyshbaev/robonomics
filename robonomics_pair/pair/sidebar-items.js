@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":[["PairSubCmds",""]],"fn":[["reqres_client","Send ping or get requests to client"],["reqres_server","Listen for ping or get requests from clients"]],"struct":[["ConnectCmd",""],["ListenCmd",""],["PairCmd",""]]};
