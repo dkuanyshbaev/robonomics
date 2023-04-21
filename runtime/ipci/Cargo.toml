@@ -52,7 +52,8 @@ pallet-utility = { git = "https://github.com/paritytech/substrate", branch = "po
 pallet-timestamp = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.41", default-features = false }
 pallet-transaction-payment = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.41", default-features = false }
 pallet-transaction-payment-rpc-runtime-api = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.41", default-features = false }
-pallet-randomness-collective-flip = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.31", default-features = false }
+# pallet-randomness-collective-flip = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.31", default-features = false }
+pallet-randomness-collective-flip = "15.0.0"
 
 # robonomics dependencies
 pallet-robonomics-datalog = { path = "../../frame/datalog", default-features = false }
