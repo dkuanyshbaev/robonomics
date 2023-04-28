@@ -35,7 +35,7 @@ use xcm::prelude::*;
 use xcm_executor::traits::ConvertOrigin;
 
 use frame_support::PalletId;
-pub use pallet::*;
+use frame_system::pallet::*;
 
 #[frame_support::pallet]
 pub mod pallet {
@@ -71,11 +71,15 @@ pub mod pallet {
     /// The module configuration trait.
     pub trait Config: frame_system::Config {
         /// The overarching event type.
-        type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+        type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
 
         /// Required origin for sending XCM messages. If successful, it resolves to `MultiLocation`
         /// which exists as an interior location within this chain's XCM context.
-        type SendXcmOrigin: EnsureOrigin<<Self as SysConfig>::Origin, Success = MultiLocation>;
+        type SendXcmOrigin: EnsureOrigin<
+            <Self as SysConfig>::RuntimeOrigin,
+            Success = MultiLocation,
+        >;
+        // type SendXcmOrigin: EnsureOrigin<<Self as SysConfig>::Origin, Success = MultiLocation>;
 
         /// The type used to actually dispatch an XCM to its destination.
         type XcmRouter: SendXcm;
@@ -83,13 +87,19 @@ pub mod pallet {
         /// Required origin for executing XCM messages, including the teleport functionality. If successful,
         /// then it resolves to `MultiLocation` which exists as an interior location within this chain's XCM
         /// context.
-        type ExecuteXcmOrigin: EnsureOrigin<<Self as SysConfig>::Origin, Success = MultiLocation>;
+        type ExecuteXcmOrigin: EnsureOrigin<
+            <Self as SysConfig>::RuntimeOrigin,
+            Success = MultiLocation,
+        >;
+        // type ExecuteXcmOrigin: EnsureOrigin<<Self as SysConfig>::Origin, Success = MultiLocation>;
 
         /// Our XCM filter which messages to be executed using `XcmExecutor` must pass.
-        type XcmExecuteFilter: Contains<(MultiLocation, Xcm<<Self as SysConfig>::Call>)>;
+        type XcmExecuteFilter: Contains<(MultiLocation, Xcm<<Self as SysConfig>::RuntimeCall>)>;
+        // type XcmExecuteFilter: Contains<(MultiLocation, Xcm<<Self as SysConfig>::Call>)>;
 
         /// Something to execute an XCM message.
-        type XcmExecutor: ExecuteXcm<<Self as SysConfig>::Call>;
+        type XcmExecutor: ExecuteXcm<<Self as SysConfig>::RuntimeCall>;
+        // type XcmExecutor: ExecuteXcm<<Self as SysConfig>::Call>;
 
         /// Our XCM filter which messages to be teleported using the dedicated extrinsic must pass.
         type XcmTeleportFilter: Contains<(MultiLocation, Vec<MultiAsset>)>;
@@ -98,19 +108,22 @@ pub mod pallet {
         type XcmReserveTransferFilter: Contains<(MultiLocation, Vec<MultiAsset>)>;
 
         /// Means of measuring the weight consumed by an XCM message locally.
-        type Weigher: WeightBounds<<Self as SysConfig>::Call>;
+        type Weigher: WeightBounds<<Self as SysConfig>::RuntimeCall>;
+        // type Weigher: WeightBounds<<Self as SysConfig>::Call>;
 
         /// Means of inverting a location.
         type LocationInverter: InvertLocation;
 
         /// The outer `Origin` type.
-        type Origin: From<Origin> + From<<Self as SysConfig>::Origin>;
+        type Origin: From<Origin> + From<<Self as SysConfig>::RuntimeOrigin>;
 
         /// The outer `Call` type.
         type Call: Parameter
             + GetDispatchInfo
-            + IsType<<Self as frame_system::Config>::Call>
-            + Dispatchable<Origin = <Self as Config>::Origin, PostInfo = PostDispatchInfo>;
+            // + IsType<<Self as frame_system::Config>::Call>
+            + IsType<<Self as frame_system::Config>::RuntimeCall>
+            + Dispatchable<RuntimeOrigin = <Self as Config>::Origin, PostInfo = PostDispatchInfo>;
+        // + Dispatchable<Origin = <Self as Config>::Origin, PostInfo = PostDispatchInfo>;
 
         const VERSION_DISCOVERY_QUEUE_SIZE: u32;
 
@@ -620,7 +633,8 @@ pub mod pallet {
         #[pallet::weight(max_weight.saturating_add(100_000_000u64))]
         pub fn execute(
             origin: OriginFor<T>,
-            message: Box<VersionedXcm<<T as SysConfig>::Call>>,
+            // message: Box<VersionedXcm<<T as SysConfig>::Call>>,
+            message: Box<VersionedXcm<<T as SysConfig>::RuntimeCall>>,
             max_weight: Weight,
         ) -> DispatchResultWithPostInfo {
             let origin_location = T::ExecuteXcmOrigin::ensure_origin(origin)?;
@@ -1817,12 +1831,15 @@ where
 
 /// A simple passthrough where we reuse the `MultiLocation`-typed XCM origin as the inner value of
 /// this crate's `Origin::Xcm` value.
-pub struct XcmPassthrough<Origin>(PhantomData<Origin>);
-impl<Origin: From<crate::Origin>> ConvertOrigin<Origin> for XcmPassthrough<Origin> {
+pub struct XcmPassthrough<RuntimeOrigin>(PhantomData<RuntimeOrigin>);
+// impl<RuntimeOrigin: From<crate::Origin>> ConvertOrigin<RuntimeOrigin>
+impl<RuntimeOrigin: From<RuntimeOrigin>> ConvertOrigin<RuntimeOrigin>
+    for XcmPassthrough<RuntimeOrigin>
+{
     fn convert_origin(
         origin: impl Into<MultiLocation>,
         kind: OriginKind,
-    ) -> Result<Origin, MultiLocation> {
+    ) -> Result<RuntimeOrigin, MultiLocation> {
         let origin = origin.into();
         match kind {
             OriginKind::Xcm => Ok(crate::Origin::Xcm(origin).into()),
@@ -1830,3 +1847,16 @@ impl<Origin: From<crate::Origin>> ConvertOrigin<Origin> for XcmPassthrough<Origi
         }
     }
 }
+// pub struct XcmPassthrough<Origin>(PhantomData<Origin>);
+// impl<Origin: From<crate::Origin>> ConvertOrigin<Origin> for XcmPassthrough<Origin> {
+//     fn convert_origin(
+//         origin: impl Into<MultiLocation>,
+//         kind: OriginKind,
+//     ) -> Result<Origin, MultiLocation> {
+//         let origin = origin.into();
+//         match kind {
+//             OriginKind::Xcm => Ok(crate::Origin::Xcm(origin).into()),
+//             _ => Err(origin),
+//         }
+//     }
+// }

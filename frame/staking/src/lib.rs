@@ -36,7 +36,7 @@ use sp_std::prelude::*;
 #[cfg(test)]
 mod tests;
 
-pub use pallet::*;
+pub use frame_system::pallet::*;
 //pub use weights::WeightInfo;
 
 const STAKING_ID: LockIdentifier = *b"rbcstake";
@@ -129,7 +129,7 @@ pub mod pallet {
         type Currency: LockableCurrency<Self::AccountId, Moment = Self::BlockNumber>;
 
         /// The overarching event type.
-        type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+        type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
 
         /// New bonded value handler.
         type OnBond: OnBondHandler<BalanceOf<Self>>;

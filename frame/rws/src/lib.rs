@@ -28,7 +28,7 @@ use sp_runtime::RuntimeDebug;
 #[cfg(test)]
 mod tests;
 
-pub use pallet::*;
+pub use frame_system::pallet::*;
 
 #[derive(PartialEq, Eq, Clone, Encode, Decode, TypeInfo, RuntimeDebug)]
 pub enum Subscription {
@@ -142,7 +142,7 @@ pub mod pallet {
         /// The auction bid currency.
         type AuctionCurrency: ReservableCurrency<Self::AccountId>;
         /// The overarching event type.
-        type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+        type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
         /// Reference call weight, general transaction consumes this weight.
         #[pallet::constant]
         type ReferenceCallWeight: Get<Weight>;

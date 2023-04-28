@@ -23,7 +23,7 @@ pub mod signed;
 pub mod technics;
 pub mod traits;
 
-pub use pallet::*;
+pub use frame_system::pallet::*;
 pub use signed::*;
 pub use traits::*;
 
@@ -43,7 +43,7 @@ pub mod pallet {
         type Report: dispatch::Parameter + Report<Self::Index, Self::AccountId>;
 
         /// The overarching event type.
-        type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+        type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
     }
 
     pub type TechnicsFor<T> =
@@ -114,7 +114,8 @@ pub mod pallet {
                     <NextIndex<T>>::put(index)
                 }
             }
-            1
+            frame_support::dispatch::Weight::zero().add(1)
+            // 1
         }
     }
 

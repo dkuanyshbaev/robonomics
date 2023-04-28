@@ -23,7 +23,7 @@
 use sp_inherents::InherentData;
 use sp_inherents::{InherentIdentifier, IsFatalError};
 
-pub use pallet::*;
+pub use frame_system::pallet::*;
 
 #[frame_support::pallet]
 pub mod pallet {
@@ -45,7 +45,7 @@ pub mod pallet {
         type Currency: Currency<Self::AccountId>;
 
         /// The overarching event type.
-        type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+        type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
 
         /// Reward amount for block proposer.
         #[pallet::constant]
@@ -84,7 +84,8 @@ pub mod pallet {
         fn on_initialize(_n: BlockNumberFor<T>) -> Weight {
             <Lighthouse<T>>::kill();
             <BlockReward<T>>::kill();
-            0
+            frame_support::dispatch::Weight::zero().add(1)
+            // 0
         }
 
         fn on_finalize(_n: T::BlockNumber) {

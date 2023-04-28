@@ -18,7 +18,7 @@
 //! Simple robot launch runtime module. This can be compiled with `#[no_std]`, ready for Wasm.
 #![cfg_attr(not(feature = "std"), no_std)]
 
-pub use pallet::*;
+pub use frame_system::pallet::*;
 
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarking;
@@ -33,7 +33,7 @@ pub mod pallet {
         /// Robot launch parameter data type.
         type Parameter: Parameter + Default;
         /// The overarching event type.
-        type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+        type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
     }
 
     #[pallet::storage]

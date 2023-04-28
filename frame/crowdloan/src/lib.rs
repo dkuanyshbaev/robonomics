@@ -18,7 +18,7 @@
 //! Robonomics crowdloan runtime module. This can be compiled with `#[no_std]`, ready for Wasm.
 #![cfg_attr(not(feature = "std"), no_std)]
 
-pub use pallet::*;
+pub use frame_system::pallet::*;
 
 use sp_std::prelude::*;
 use xcm::prelude::*;
@@ -76,7 +76,7 @@ pub mod pallet {
             + From<crowdloan::Call<Self::RelayRuntime>>
             + Encode;
         /// The overarching event type.
-        type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+        type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
     }
 
     #[pallet::error]

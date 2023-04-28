@@ -21,7 +21,7 @@
 #![allow(clippy::unused_unit)]
 #![allow(clippy::from_over_into)]
 
-pub use pallet::*;
+pub use frame_system::pallet::*;
 pub use weights::WeightInfo;
 
 #[cfg(feature = "runtime-benchmarks")]
@@ -44,7 +44,7 @@ pub mod pallet {
         /// Datalog record data type.
         type Record: Parameter + Default + From<Vec<u8>>;
         /// The overarching event type.
-        type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+        type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
         /// Data log window size
         #[pallet::constant]
         type WindowSize: Get<u64>;
