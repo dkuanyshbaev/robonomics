@@ -143,7 +143,7 @@ dependencies = [
  "pallet-transaction-payment",
  "pallet-transaction-payment-rpc-runtime-api",
  "pallet-utility",
- "pallet-xcm 0.9.26",
+ "pallet-xcm 0.9.31",
  "parachain-info",
  "parity-scale-codec",
  "polkadot-parachain",
@@ -3526,7 +3526,7 @@ dependencies = [
  "pallet-transaction-payment-rpc-runtime-api",
  "pallet-treasury",
  "pallet-utility",
- "pallet-xcm 0.9.26",
+ "pallet-xcm 0.9.31",
  "parachain-info",
  "parity-scale-codec",
  "polkadot-parachain",
@@ -3932,7 +3932,7 @@ dependencies = [
  "pallet-utility",
  "pallet-vesting",
  "pallet-whitelist",
- "pallet-xcm 0.9.31",
+ "pallet-xcm 0.9.31 (git+https://github.com/paritytech/polkadot?branch=release-v0.9.31)",
  "parity-scale-codec",
  "polkadot-primitives",
  "polkadot-runtime-common",
@@ -4740,7 +4740,7 @@ dependencies = [
  "pallet-treasury",
  "pallet-utility",
  "pallet-vesting",
- "pallet-xcm 0.9.26",
+ "pallet-xcm 0.9.31",
  "parachain-info",
  "parity-scale-codec",
  "polkadot-parachain",
@@ -6430,7 +6430,7 @@ dependencies = [
 
 [[package]]
 name = "pallet-xcm"
-version = "0.9.26"
+version = "0.9.31"
 dependencies = [
  "frame-support",
  "frame-system",
@@ -7621,7 +7621,7 @@ dependencies = [
  "pallet-treasury",
  "pallet-utility",
  "pallet-vesting",
- "pallet-xcm 0.9.31",
+ "pallet-xcm 0.9.31 (git+https://github.com/paritytech/polkadot?branch=release-v0.9.31)",
  "parity-scale-codec",
  "polkadot-primitives",
  "polkadot-runtime-common",

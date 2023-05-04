@@ -9,8 +9,8 @@ pub trait WeightInfo {
 impl WeightInfo for () {
     fn record() -> Weight {
         (1_000_000_u64 as Weight)
+            .saturating_add(DbWeight::get().reads(2_u64))
             .saturating_add(DbWeight::get().reads(2_u64 as Weight))
-            .saturating_add(DbWeight::get().writes(3_u64 as Weight))
     }
 
     fn erase(win: u64) -> Weight {

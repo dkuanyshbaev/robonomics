@@ -2,23 +2,19 @@
 authors = ["Parity Technologies <admin@parity.io>"]
 edition = "2021"
 name = "pallet-xcm"
-version = "0.9.26"
+version = "0.9.31"
 
 [dependencies]
-codec = { package = "parity-scale-codec", version = "3.0.0", default-features = false, features = [
-  "derive",
-] }
-log = { version = "0.4.16", default-features = false }
-scale-info = { version = "2.1.0", default-features = false, features = [
-  "derive",
-] }
-serde = { version = "1.0.136", optional = true, features = ["derive"] }
+codec = { package = "parity-scale-codec", version = "3.0.0", default-features = false, features = ["derive"] }
+scale-info = { version = "2.1.2", default-features = false, features = ["derive"] }
+serde = { version = "1.0.137", optional = true, features = ["derive"] }
+log = { version = "0.4.17", default-features = false }
 
+sp-std = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.31" }
+sp-runtime = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.31" }
+sp-core = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.31" }
 frame-support = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.31" }
 frame-system = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.31" }
-sp-core = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.31" }
-sp-runtime = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.31" }
-sp-std = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.31" }
 
 xcm = { git = "https://github.com/paritytech/polkadot", default-features = false, branch = "release-v0.9.31" }
 xcm-executor = { git = "https://github.com/paritytech/polkadot", default-features = false, branch = "release-v0.9.31" }
@@ -33,20 +29,18 @@ xcm-builder = { git = "https://github.com/paritytech/polkadot", branch = "releas
 [features]
 default = ["std"]
 std = [
-  "codec/std",
-  "scale-info/std",
-  "serde",
-  "sp-std/std",
-  "sp-core/std",
-  "sp-runtime/std",
-  "frame-support/std",
-  "frame-system/std",
-  "xcm/std",
-  "xcm-executor/std",
+	"codec/std",
+	"scale-info/std",
+	"serde",
+	"sp-std/std",
+	"sp-core/std",
+	"sp-runtime/std",
+	"frame-support/std",
+	"frame-system/std",
+	"xcm/std",
+	"xcm-executor/std",
 ]
 runtime-benchmarks = [
-  "xcm/runtime-benchmarks",
-  "xcm-builder/runtime-benchmarks",
-  "frame-support/runtime-benchmarks",
-  "frame-system/runtime-benchmarks",
+	"frame-system/runtime-benchmarks"
 ]
+try-runtime = ["frame-support/try-runtime"]
