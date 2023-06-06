@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["add_explicit_peers",""]]};
+window.SIDEBAR_ITEMS = {"fn":[["add_peers",""]]};

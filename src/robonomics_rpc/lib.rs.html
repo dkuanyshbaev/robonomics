@@ -256,7 +256,6 @@
 <span id="256">256</span>
 <span id="257">257</span>
 <span id="258">258</span>
-<span id="259">259</span>
 </pre><pre class="rust"><code><span class="comment">///////////////////////////////////////////////////////////////////////////////</span>
 <span class="comment">//</span>
 <span class="comment">//  Copyright 2018-2021 Robonomics Network &lt;research@robonomics.network&gt;</span>
@@ -279,7 +278,7 @@
 <span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
 
 <span class="kw">use</span> <span class="ident">robonomics_primitives</span>::{<span class="ident">AccountId</span>, <span class="ident">Balance</span>, <span class="ident">Block</span>, <span class="ident">Index</span>};
-<span class="kw">use</span> <span class="ident">robonomics_protocol::network::RobonomicsNetwork</span>;
+<span class="kw">use</span> <span class="ident">robonomics_protocol::pubsub::Pubsub</span>;
 
 <span class="kw">use</span> <span class="ident">jsonrpsee::RpcModule</span>;
 <span class="kw">use</span> <span class="ident">sc_client_api::AuxStore</span>;
@@ -306,7 +305,7 @@
     <span class="doccomment">/// Whether to deny unsafe calls.</span>
     <span class="kw">pub</span> <span class="ident">deny_unsafe</span>: <span class="ident">DenyUnsafe</span>,
     <span class="doccomment">/// Robonomics Network.</span>
-    <span class="kw">pub</span> <span class="ident">network</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">RobonomicsNetwork</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">pubsub</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Pubsub</span><span class="op">&gt;</span>,
 }
 
 <span class="doccomment">/// Instantiate all Full RPC extensions.</span>
@@ -334,15 +333,14 @@
         <span class="ident">client</span>,
         <span class="ident">pool</span>,
         <span class="ident">deny_unsafe</span>,
-        <span class="ident">network</span>,
+        <span class="ident">pubsub</span>,
     } <span class="op">=</span> <span class="ident">deps</span>;
 
     <span class="ident">io</span>.<span class="ident">merge</span>(<span class="ident">System::new</span>(<span class="ident">client</span>.<span class="ident">clone</span>(), <span class="ident">pool</span>.<span class="ident">clone</span>(), <span class="ident">deny_unsafe</span>).<span class="ident">into_rpc</span>())<span class="question-mark">?</span>;
     <span class="ident">io</span>.<span class="ident">merge</span>(<span class="ident">TransactionPayment::new</span>(<span class="ident">client</span>.<span class="ident">clone</span>()).<span class="ident">into_rpc</span>())<span class="question-mark">?</span>;
-    <span class="ident">io</span>.<span class="ident">merge</span>(<span class="ident">PubSubRpc::new</span>(<span class="ident">network</span>.<span class="ident">clone</span>()).<span class="ident">into_rpc</span>())<span class="question-mark">?</span>;
+    <span class="ident">io</span>.<span class="ident">merge</span>(<span class="ident">PubSubRpc::new</span>(<span class="ident">pubsub</span>.<span class="ident">to_owned</span>()).<span class="ident">into_rpc</span>())<span class="question-mark">?</span>;
     <span class="ident">io</span>.<span class="ident">merge</span>(<span class="ident">ExtrinsicRpc::new</span>(<span class="ident">client</span>.<span class="ident">clone</span>()).<span class="ident">into_rpc</span>())<span class="question-mark">?</span>;
     <span class="ident">io</span>.<span class="ident">merge</span>(<span class="ident">ReqRespRpc::new</span>().<span class="ident">into_rpc</span>())<span class="question-mark">?</span>;
-    <span class="comment">// io.merge(ReqRespRpc::new(network).into_rpc())?;</span>
     <span class="prelude-val">Ok</span>(<span class="ident">io</span>)
 }
 

@@ -22,6 +22,12 @@
 <span id="22">22</span>
 <span id="23">23</span>
 <span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
 </pre><pre class="rust"><code><span class="comment">///////////////////////////////////////////////////////////////////////////////</span>
 <span class="comment">//</span>
 <span class="comment">//  Copyright 2018-2021 Robonomics Network &lt;research@robonomics.network&gt;</span>
@@ -43,8 +49,14 @@
 
 <span class="attribute">#![<span class="ident">warn</span>(<span class="ident">missing_docs</span>)]</span>
 
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;discovery&quot;</span>))]</span>
 <span class="kw">fn</span> <span class="ident">main</span>() -&gt; <span class="ident">robonomics_service::Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
     <span class="ident">robonomics_service::run</span>()
+}
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;discovery&quot;</span>)]</span>
+<span class="attribute">#[<span class="ident">tokio::main</span>]</span>
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">main</span>() -&gt; <span class="ident">robonomics_service::Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+    <span class="ident">robonomics_service::run</span>().<span class="kw">await</span>
 }
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="robonomics" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0-nightly (f6f9d5e73 2022-08-04)" ></div></body></html>

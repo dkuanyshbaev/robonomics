@@ -530,6 +530,8 @@
 <span id="530">530</span>
 <span id="531">531</span>
 <span id="532">532</span>
+<span id="533">533</span>
+<span id="534">534</span>
 </pre><pre class="rust"><code><span class="comment">///////////////////////////////////////////////////////////////////////////////</span>
 <span class="comment">//</span>
 <span class="comment">//  Copyright 2018-2021 Robonomics Network &lt;research@robonomics.network&gt;</span>
@@ -567,7 +569,7 @@
 <span class="kw">use</span> <span class="ident">libp2p::core::identity::Keypair</span>;
 <span class="kw">use</span> <span class="ident">polkadot_service::CollatorPair</span>;
 <span class="kw">use</span> <span class="ident">robonomics_primitives</span>::{<span class="ident">AccountId</span>, <span class="ident">Balance</span>, <span class="ident">Block</span>, <span class="ident">Hash</span>, <span class="ident">Index</span>};
-<span class="kw">use</span> <span class="ident">robonomics_protocol</span>::{<span class="ident">network::RobonomicsNetwork</span>, <span class="ident">pubsub::Pubsub</span>};
+<span class="kw">use</span> <span class="ident">robonomics_protocol::network::RobonomicsNetwork</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sc_executor::NativeElseWasmExecutor</span>;
 <span class="kw">use</span> <span class="ident">sc_network</span>::{<span class="ident">NetworkBlock</span>, <span class="ident">NetworkService</span>};
 <span class="kw">use</span> <span class="ident">sc_service</span>::{<span class="ident">Configuration</span>, <span class="ident">Role</span>, <span class="ident">TFullBackend</span>, <span class="ident">TFullClient</span>, <span class="ident">TaskManager</span>};
@@ -733,7 +735,7 @@
     <span class="ident">build_import_queue</span>: <span class="ident">BIQ</span>,
     <span class="ident">build_consensus</span>: <span class="ident">BIC</span>,
     <span class="ident">local_key</span>: <span class="ident">Keypair</span>,
-    <span class="ident">heartbeat_interval</span>: <span class="ident">u64</span>,
+    <span class="ident">heartbeat_interval</span>: <span class="ident">Duration</span>,
     <span class="ident">bootnodes</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
     <span class="ident">disable_mdns</span>: <span class="ident">bool</span>,
     <span class="ident">disable_kad</span>: <span class="ident">bool</span>,
@@ -833,26 +835,28 @@
     <span class="kw">let</span> <span class="ident">rpc_client</span> <span class="op">=</span> <span class="ident">client</span>.<span class="ident">clone</span>();
     <span class="kw">let</span> <span class="ident">rpc_pool</span> <span class="op">=</span> <span class="ident">transaction_pool</span>.<span class="ident">clone</span>();
 
-    <span class="kw">let</span> (<span class="ident">pubsub</span>, <span class="ident">pubsub_worker</span>) <span class="op">=</span>
-        <span class="ident">Pubsub::new</span>(<span class="ident">local_key</span>.<span class="ident">clone</span>(), <span class="ident">heartbeat_interval</span>).<span class="ident">expect</span>(<span class="string">&quot;New robonomics pubsub&quot;</span>);
+    <span class="comment">// TODO: move to cli</span>
+    <span class="kw">let</span> <span class="ident">network_listen_address</span> <span class="op">=</span> <span class="string">&quot;/ip4/127.0.0.1/tcp/30400&quot;</span>
+        .<span class="ident">parse</span>()
+        .<span class="ident">expect</span>(<span class="string">&quot;robonomics network listen address&quot;</span>);
 
-    <span class="ident">task_manager</span>
-        .<span class="ident">spawn_handle</span>()
-        .<span class="ident">spawn</span>(<span class="string">&quot;pubsub_service&quot;</span>, <span class="prelude-val">None</span>, <span class="ident">pubsub_worker</span>);
+    <span class="comment">// TODO: move to cli</span>
+    <span class="kw">let</span> <span class="ident">disable_pubsub</span> <span class="op">=</span> <span class="bool-val">false</span>;
 
-    <span class="kw">let</span> (<span class="ident">robonomics_network</span>, <span class="ident">network_worker</span>) <span class="op">=</span> <span class="ident">RobonomicsNetwork::new</span>(
+    <span class="kw">let</span> (<span class="ident">robonomics_network</span>, <span class="ident">pubsub</span>) <span class="op">=</span> <span class="ident">RobonomicsNetwork::new</span>(
         <span class="ident">local_key</span>,
-        <span class="ident">pubsub</span>.<span class="ident">clone</span>(),
         <span class="ident">heartbeat_interval</span>,
+        <span class="ident">network_listen_address</span>,
         <span class="ident">bootnodes</span>,
+        <span class="ident">disable_pubsub</span>,
         <span class="ident">disable_mdns</span>,
         <span class="ident">disable_kad</span>,
     )
-    .<span class="ident">expect</span>(<span class="string">&quot;New robonomics network layer&quot;</span>);
+    .<span class="ident">expect</span>(<span class="string">&quot;New robonomics network&quot;</span>);
 
     <span class="ident">task_manager</span>
         .<span class="ident">spawn_handle</span>()
-        .<span class="ident">spawn</span>(<span class="string">&quot;network_service&quot;</span>, <span class="prelude-val">None</span>, <span class="ident">network_worker</span>);
+        .<span class="ident">spawn</span>(<span class="string">&quot;network_service&quot;</span>, <span class="prelude-val">None</span>, <span class="ident">robonomics_network</span>);
 
     <span class="ident">sc_service::spawn_tasks</span>(<span class="ident">sc_service::SpawnTasksParams</span> {
         <span class="ident">rpc_builder</span>: <span class="ident">Box::new</span>(<span class="kw">move</span> <span class="op">|</span><span class="ident">deny_unsafe</span>, <span class="kw">_</span><span class="op">|</span> {
@@ -860,7 +864,7 @@
                 <span class="ident">client</span>: <span class="ident">rpc_client</span>.<span class="ident">clone</span>(),
                 <span class="ident">pool</span>: <span class="ident">rpc_pool</span>.<span class="ident">clone</span>(),
                 <span class="ident">deny_unsafe</span>,
-                <span class="ident">network</span>: <span class="ident">robonomics_network</span>.<span class="ident">clone</span>(),
+                <span class="ident">pubsub</span>: <span class="ident">pubsub</span>.<span class="ident">to_owned</span>(),
             };
 
             <span class="ident">robonomics_rpc::create_full</span>(<span class="ident">deps</span>).<span class="ident">map_err</span>(<span class="ident">Into::into</span>)

@@ -117,6 +117,10 @@
 <span id="117">117</span>
 <span id="118">118</span>
 <span id="119">119</span>
+<span id="120">120</span>
+<span id="121">121</span>
+<span id="122">122</span>
+<span id="123">123</span>
 </pre><pre class="rust"><code><span class="comment">///////////////////////////////////////////////////////////////////////////////</span>
 <span class="comment">//</span>
 <span class="comment">//  Copyright 2018-2021 Robonomics Network &lt;research@robonomics.network&gt;</span>
@@ -136,7 +140,7 @@
 <span class="comment">///////////////////////////////////////////////////////////////////////////////</span>
 
 <span class="kw">use</span> <span class="ident">clap::Parser</span>;
-<span class="kw">use</span> <span class="ident">robonomics_pair</span>;
+<span class="comment">// use robonomics_pair;</span>
 <span class="kw">use</span> <span class="ident">sc_cli</span>::{<span class="ident">KeySubcommand</span>, <span class="ident">SignCmd</span>, <span class="ident">VanityCmd</span>, <span class="ident">VerifyCmd</span>};
 
 <span class="doccomment">/// An overarching CLI command definition.</span>
@@ -172,7 +176,7 @@
     <span class="kw">pub</span> <span class="ident">heartbeat_interval</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span>,
 
     <span class="doccomment">/// Nodes for connect.</span>
-    <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>)]</span>
+    <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">value_delimiter</span> <span class="op">=</span> <span class="string">&#39;,&#39;</span>)]</span>
     <span class="kw">pub</span> <span class="ident">robonomics_bootnodes</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
 
     <span class="doccomment">/// Disable mDNS.</span>
@@ -182,6 +186,10 @@
     <span class="doccomment">/// Disable Kademlia.</span>
     <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>)]</span>
     <span class="kw">pub</span> <span class="ident">disable_kad</span>: <span class="ident">bool</span>,
+
+    <span class="doccomment">/// Pubsub port.</span>
+    <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>)]</span>
+    <span class="kw">pub</span> <span class="ident">pubsub_port</span>: <span class="ident">String</span>,
 
     <span class="doccomment">/// Polkadot relaychain arguments.</span>
     <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">raw</span> <span class="op">=</span> <span class="bool-val">true</span>, <span class="ident">conflicts_with</span> <span class="op">=</span> <span class="string">&quot;relay-chain-rpc-url&quot;</span>)]</span>
@@ -220,7 +228,7 @@
     <span class="doccomment">/// Pair by peerId operatins</span>
     <span class="doccomment">/// robonomics pair listen --peer peerID_to_listen</span>
     <span class="doccomment">/// robonomics pair connect --peer peerID_to_listen</span>
-    <span class="ident">Pair</span>(<span class="ident">robonomics_pair::pair::PairCmd</span>),
+    <span class="comment">// Pair(robonomics_pair::pair::PairCmd),</span>
 
     <span class="doccomment">/// Benchmarking runtime pallets.</span>
     <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;frame-benchmarking-cli&quot;</span>)]</span>

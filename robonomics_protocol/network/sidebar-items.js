@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":[["behaviour","Robonomics network behaviour."],["discovery","Robonomics protocol node discovery."],["worker","Robonomics network worker."]],"struct":[["RobonomicsNetwork",""]]};
+window.SIDEBAR_ITEMS = {"mod":[["behaviour","Robonomics network behaviour."],["discovery","Robonomics protocol node discovery."]],"struct":[["RobonomicsNetwork",""]]};

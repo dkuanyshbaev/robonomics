@@ -14,7 +14,7 @@ var sourcesIndex = JSON.parse('{\
 "robonomics":["",[],["main.rs"]],\
 "robonomics_pair":["",[],["error.rs","lib.rs","pair.rs"]],\
 "robonomics_primitives":["",[],["lib.rs"]],\
-"robonomics_protocol":["",[["network",[],["behaviour.rs","discovery.rs","worker.rs"]]],["error.rs","ethereum.rs","id.rs","lib.rs","network.rs","pubsub.rs","reqres.rs","subxt.rs"]],\
+"robonomics_protocol":["",[["network",[],["behaviour.rs","discovery.rs"]]],["error.rs","ethereum.rs","id.rs","lib.rs","network.rs","pubsub.rs","reqres.rs","subxt.rs"]],\
 "robonomics_request_response_example":["",[],["main.rs"]],\
 "robonomics_ros_example":["",[],["main.rs"]],\
 "robonomics_rpc":["",[],["extrinsic.rs","lib.rs","pubsub.rs","reqresrpc.rs"]],\
