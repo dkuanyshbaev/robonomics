@@ -113,7 +113,6 @@ pub mod pallet {
     use frame_support::{
         pallet_prelude::*,
         traits::{Currency, Imbalance, ReservableCurrency, Time, UnfilteredDispatchable},
-        weights::GetDispatchInfo,
     };
     use frame_system::pallet_prelude::*;
     use pallet_robonomics_staking::OnBondHandler;
@@ -132,7 +131,8 @@ pub mod pallet {
     #[pallet::config]
     pub trait Config: frame_system::Config {
         /// Call subscription method.
-        type Call: Parameter + UnfilteredDispatchable<Origin = Self::Origin> + GetDispatchInfo;
+        type Call: Parameter + UnfilteredDispatchable<RuntimeOrigin = Self::RuntimeOrigin>;
+        // type Call: Parameter + UnfilteredDispatchable<Origin = Self::Origin> + GetDispatchInfo;
         /// Current time source.
         type Time: Time<Moment = Self::Moment>;
         /// Time should be aligned to weights for TPS calculations.
