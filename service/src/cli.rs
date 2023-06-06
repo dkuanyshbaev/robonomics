@@ -64,6 +64,10 @@ pub struct Cli {
     #[clap(long)]
     pub disable_kad: bool,
 
+    /// Pubsub port.
+    #[clap(long)]
+    pub pubsub_port: String,
+
     /// Polkadot relaychain arguments.
     #[clap(raw = true, conflicts_with = "relay-chain-rpc-url")]
     #[cfg(feature = "parachain")]

@@ -194,6 +194,7 @@ pub fn run() -> sc_cli::Result<()> {
                         cli.robonomics_bootnodes,
                         cli.disable_mdns,
                         cli.disable_kad,
+                        cli.pubsub_port,
                     )
                 }),
 

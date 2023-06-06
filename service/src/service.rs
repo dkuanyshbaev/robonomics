@@ -79,6 +79,7 @@ pub fn new_partial<Runtime, Executor>(
     bootnodes: Vec<String>,
     disable_mdns: bool,
     disable_kad: bool,
+    pubsub_port: String,
 ) -> Result<
     sc_service::PartialComponents<
         FullClient<Runtime, Executor>,
@@ -181,10 +182,15 @@ where
         },
     )?;
 
-    // TODO: move to cli
-    let network_listen_address = "/ip4/127.0.0.1/tcp/30400"
+    // Test polygon only
+    let network_listen_address = format!("/ip4/127.0.0.1/tcp/{}", pubsub_port)
         .parse()
         .expect("robonomics network listen address");
+
+    // TODO: move to cli
+    // let network_listen_address = "/ip4/127.0.0.1/tcp/30400"
+    //     .parse()
+    //     .expect("robonomics network listen address");
 
     // TODO: move to cli
     let disable_pubsub = false;
@@ -245,6 +251,7 @@ pub fn full_base<Runtime, Executor>(
     bootnodes: Vec<String>,
     disable_mdns: bool,
     disable_kad: bool,
+    pubsub_port: String,
 ) -> Result<
     (
         TaskManager,
@@ -276,6 +283,7 @@ where
         bootnodes,
         disable_mdns,
         disable_kad,
+        pubsub_port,
     )?;
 
     let warp_sync = Arc::new(grandpa::warp_proof::NetworkProvider::new(
@@ -474,6 +482,7 @@ pub mod robonomics {
         bootnodes: Vec<String>,
         disable_mdns: bool,
         disable_kad: bool,
+        pubsub_port: String,
     ) -> Result<TaskManager> {
         super::full_base::<RuntimeApi, LocalExecutor>(
             config,
@@ -482,6 +491,7 @@ pub mod robonomics {
             bootnodes,
             disable_mdns,
             disable_kad,
+            pubsub_port,
         )
         .map(|(task_manager, _, _, _)| task_manager)
     }
