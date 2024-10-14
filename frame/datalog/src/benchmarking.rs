@@ -24,6 +24,8 @@ use frame_system::RawOrigin;
 use parity_scale_codec::{Decode, Encode};
 use sp_std::prelude::*;
 
+const SEED: u32 = 0;
+
 fn setup_record<T: Config>() -> T::Record {
     let s = <T::Record as MaxEncodedLen>::max_encoded_len();
     let mut v = Vec::with_capacity(s - 4);
@@ -32,31 +34,31 @@ fn setup_record<T: Config>() -> T::Record {
     v.using_encoded(|mut slice| T::Record::decode(&mut slice).unwrap_or_default())
 }
 
-fn setup_datalog<T: Config>(caller: T::AccountId, data: T::Record) -> Result<(), &'static str>
-where
-    T::Record: Clone,
-{
-    for _ in 0..T::WindowSize::get() {
-        Datalog::<T>::record(RawOrigin::Signed(caller.clone()).into(), data.clone())?;
-    }
-    Ok(())
-}
-
-const SEED: u32 = 0;
-
 benchmarks! {
 
     record {
-        let caller: T::AccountId =  account("caller", 1, SEED );
+        let caller: T::AccountId = account("caller", 1, SEED);
         let data = setup_record::<T>();
-        setup_datalog::<T>( caller.clone(), data.clone() )?;
-    }: _( RawOrigin::Signed(caller), data )
+
+        Datalog::<T>::record(
+            RawOrigin::Signed(caller.clone()).into(),
+            data.clone()
+        )?;
+    }: _(RawOrigin::Signed(caller), data)
 
     erase {
         let caller : T::AccountId=  account("caller", 1, SEED);
         let data = setup_record::<T>();
-        setup_datalog::<T>( caller.clone(), data )?;
-    }: _( RawOrigin::Signed(caller) )
+
+        Datalog::<T>::record(
+            RawOrigin::Signed(caller.clone()).into(),
+            data
+        )?;
+        Datalog::<T>::erase(RawOrigin::Signed(caller.clone()).into())?;
+    }: _(RawOrigin::Signed(caller))
+
+    verify {
+    }
 }
 
 impl_benchmark_test_suite!(Datalog, crate::tests::new_test_ext(), crate::tests::Runtime,);
