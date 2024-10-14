@@ -69,7 +69,7 @@ use sp_runtime::traits::{
 use sp_runtime::transaction_validity::{TransactionSource, TransactionValidity};
 use sp_runtime::{
     create_runtime_str, generic, impl_opaque_keys, ApplyExtrinsicResult, BoundedVec,
-    FixedPointNumber, Perbill, Permill, Perquintill,
+    ExtrinsicInclusionMode, FixedPointNumber, Perbill, Permill, Perquintill,
 };
 use sp_std::prelude::*;
 #[cfg(feature = "std")]
@@ -167,6 +167,12 @@ impl frame_system::Config for Runtime {
     type MaxConsumers = ConstU32<16>;
     type RuntimeOrigin = RuntimeOrigin;
     type RuntimeCall = RuntimeCall;
+    type RuntimeTask = RuntimeTask;
+    type SingleBlockMigrations = ();
+    type MultiBlockMigrator = ();
+    type PreInherents = ();
+    type PostInherents = ();
+    type PostTransactions = ();
 }
 
 parameter_types! {
@@ -208,7 +214,8 @@ impl pallet_balances::Config for Runtime {
     type FreezeIdentifier = ();
     type MaxFreezes = ();
     type RuntimeHoldReason = ();
-    type MaxHolds = ();
+    // type MaxHolds = ();
+    type RuntimeFreezeReason = RuntimeFreezeReason;
 }
 
 parameter_types! {
@@ -254,6 +261,7 @@ impl pallet_vesting::Config for Runtime {
     type MinVestedTransfer = MinVestedTransfer;
     type WeightInfo = pallet_vesting::weights::SubstrateWeight<Runtime>;
     type UnvestedFundsAllowedWithdrawReasons = UnvestedFundsAllowedWithdrawReasons;
+    type BlockNumberProvider = System;
     // `VestingInfo` encode length is 36bytes. 28 schedules gets encoded as 1009 bytes, which is the
     // highest number of schedules that encodes less than 2^10.
     const MAX_VESTING_SCHEDULES: u32 = 28;
@@ -314,6 +322,7 @@ impl pallet_aura::Config for Runtime {
     type AuthorityId = AuraId;
     type DisabledValidators = ();
     type AllowMultipleBlocksPerSlot = ConstBool<false>;
+    type SlotDuration = pallet_aura::MinimumPeriodTimesTwo<Self>;
 }
 
 impl pallet_grandpa::Config for Runtime {
@@ -325,6 +334,7 @@ impl pallet_grandpa::Config for Runtime {
 
     type KeyOwnerProof = sp_core::Void;
     type EquivocationReportSystem = ();
+    type MaxNominators = ConstU32<100>; //??
 }
 
 parameter_types! {
@@ -335,20 +345,31 @@ parameter_types! {
     pub const MaxAdditionalFields: u32 = 100;
     pub const MaxRegistrars: u32 = 20;
 }
-
+use pallet_identity::legacy::IdentityInfo;
+use sp_runtime::traits::Verify;
 impl pallet_identity::Config for Runtime {
     type RuntimeEvent = RuntimeEvent;
     type Currency = Balances;
     type BasicDeposit = BasicDeposit;
-    type FieldDeposit = FieldDeposit;
+    // type FieldDeposit = FieldDeposit;
     type SubAccountDeposit = SubAccountDeposit;
     type MaxSubAccounts = MaxSubAccounts;
-    type MaxAdditionalFields = MaxAdditionalFields;
+    // type MaxAdditionalFields = MaxAdditionalFields;
     type MaxRegistrars = MaxRegistrars;
     type Slashed = ();
     type ForceOrigin = MoreThanHalfTechnicals;
     type RegistrarOrigin = MoreThanHalfTechnicals;
     type WeightInfo = ();
+
+    // ???
+    type ByteDeposit = ConstU128<10>;
+    type IdentityInformation = IdentityInfo<MaxAdditionalFields>;
+    type OffchainSignature = Signature;
+    type SigningPublicKey = <Signature as Verify>::Signer;
+    type UsernameAuthorityOrigin = EnsureRoot<Self::AccountId>;
+    type PendingUsernameExpiration = ConstU32<{ 7 * DAYS }>;
+    type MaxSuffixLength = ConstU32<7>;
+    type MaxUsernameLength = ConstU32<32>;
 }
 
 parameter_types! {
@@ -383,8 +404,9 @@ impl pallet_preimage::Config for Runtime {
     type RuntimeEvent = RuntimeEvent;
     type Currency = Balances;
     type ManagerOrigin = EnsureRoot<AccountId>;
-    type BaseDeposit = PreimageBaseDeposit;
-    type ByteDeposit = PreimageByteDeposit;
+    // type BaseDeposit = PreimageBaseDeposit;
+    // type ByteDeposit = PreimageByteDeposit;
+    type Consideration = ();
 }
 
 parameter_types! {
@@ -397,23 +419,31 @@ parameter_types! {
     pub const MaxApprovals: u32 = 100;
 }
 
+use frame_support::traits::tokens::PayFromAccount;
+use sp_runtime::traits::IdentityLookup;
 impl pallet_treasury::Config for Runtime {
     type PalletId = TreasuryPalletId;
     type Currency = Balances;
-    type ApproveOrigin = MoreThanHalfTechnicals;
+    // type ApproveOrigin = MoreThanHalfTechnicals;
     type RejectOrigin = MoreThanHalfTechnicals;
     type RuntimeEvent = RuntimeEvent;
-    type ProposalBond = ProposalBond;
-    type ProposalBondMinimum = ProposalBondMinimum;
-    type ProposalBondMaximum = ();
+    // type ProposalBond = ProposalBond;
+    // type ProposalBondMinimum = ProposalBondMinimum;
+    // type ProposalBondMaximum = ();
     type SpendPeriod = SpendPeriod;
-    type OnSlash = ();
+    // type OnSlash = ();
     type Burn = Burn;
     type BurnDestination = ();
     type SpendFunds = ();
     type WeightInfo = ();
     type MaxApprovals = MaxApprovals;
     type SpendOrigin = frame_support::traits::NeverEnsureOrigin<u128>;
+    type AssetKind = u32;
+    type Beneficiary = u128;
+    type BeneficiaryLookup = IdentityLookup<Self::Beneficiary>;
+    // type Paymaster =
+    // type BalanceConverter =
+    // type PayoutPeriod =
 }
 
 parameter_types! {
@@ -547,22 +577,22 @@ parameter_types! {
     pub const MinimalBid: Balance = 1 * XRT;
 }
 
-impl pallet_robonomics_rws::Config for Runtime {
-    type Call = RuntimeCall;
-    type Time = Timestamp;
-    type Moment = Moment;
-    type AuctionIndex = u32;
-    type AuctionCurrency = Balances;
-    type RuntimeEvent = RuntimeEvent;
-    type ReferenceCallWeight = ReferenceCallWeight;
-    type AuctionDuration = AuctionDuration;
-    type AuctionCost = AuctionCost;
-    type MinimalBid = MinimalBid;
-}
+// impl pallet_robonomics_rws::Config for Runtime {
+//     type Call = RuntimeCall;
+//     type Time = Timestamp;
+//     type Moment = Moment;
+//     type AuctionIndex = u32;
+//     type AuctionCurrency = Balances;
+//     type RuntimeEvent = RuntimeEvent;
+//     type ReferenceCallWeight = ReferenceCallWeight;
+//     type AuctionDuration = AuctionDuration;
+//     type AuctionCost = AuctionCost;
+//     type MinimalBid = MinimalBid;
+// }
 
-impl pallet_robonomics_digital_twin::Config for Runtime {
-    type RuntimeEvent = RuntimeEvent;
-}
+// impl pallet_robonomics_digital_twin::Config for Runtime {
+//     type RuntimeEvent = RuntimeEvent;
+// }
 
 impl pallet_robonomics_liability::Config for Runtime {
     type Agreement = pallet_robonomics_liability::SignedAgreement<
@@ -608,8 +638,8 @@ construct_runtime!(
         // Robonomics Network modules.
         Datalog: pallet_robonomics_datalog,
         Launch: pallet_robonomics_launch,
-        RWS: pallet_robonomics_rws,
-        DigitalTwin: pallet_robonomics_digital_twin,
+        // RWS: pallet_robonomics_rws,
+        // DigitalTwin: pallet_robonomics_digital_twin,
         Liability: pallet_robonomics_liability,
 
         // Sudo. Usable initially.
@@ -681,7 +711,7 @@ impl_runtime_apis! {
             Executive::execute_block(block)
         }
 
-        fn initialize_block(header: &<Block as BlockT>::Header) {
+        fn initialize_block(header: &<Block as BlockT>::Header) -> ExtrinsicInclusionMode {
             Executive::initialize_block(header)
         }
     }
