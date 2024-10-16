@@ -608,8 +608,8 @@ construct_runtime!(
         // Robonomics Network modules.
         Datalog: pallet_robonomics_datalog,
         Launch: pallet_robonomics_launch,
-        RWS: pallet_robonomics_rws,
-        DigitalTwin: pallet_robonomics_digital_twin,
+        // RWS: pallet_robonomics_rws,
+        // DigitalTwin: pallet_robonomics_digital_twin,
         Liability: pallet_robonomics_liability,
 
         // Sudo. Usable initially.
