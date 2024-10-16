@@ -28,7 +28,7 @@ use sp_runtime::RuntimeDebug;
 //#[cfg(test)]
 //mod tests;
 
-pub use pallet::*;
+// pub use pallet::*;
 
 #[derive(PartialEq, Eq, Clone, Encode, Decode, TypeInfo, RuntimeDebug)]
 pub enum Subscription {
@@ -232,7 +232,6 @@ pub mod pallet {
     pub(super) type UnspendBondValue<T: Config> = StorageValue<_, BalanceOf<T>, ValueQuery>;
 
     #[pallet::pallet]
-    #[pallet::generate_store(pub(super) trait Store)]
     #[pallet::without_storage_info]
     pub struct Pallet<T>(PhantomData<T>);
 
