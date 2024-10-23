@@ -104,6 +104,7 @@ sp-weights = { version = "31.0.0", default-features = false }
 
 # (native)
 frame-benchmarking-cli = { version = "43.0.0" }
+# frame-benchmarking-cli = { version = "28.0.0-dev.1" }
 pallet-transaction-payment-rpc = { version = "40.0.0" }
 substrate-build-script-utils = { version = "11.0.0" }
 substrate-frame-rpc-system = { version = "38.0.0" }
@@ -181,15 +182,12 @@ cumulus-relay-chain-rpc-interface = { version = "0.17.0" }
 # Cumulus
 # (wasm)
 cumulus-pallet-dmp-queue = { version = "0.16.0", default-features = false }
-# cumulus-pallet-parachain-system = { version = "0.16.1", default-features = false }
-cumulus-pallet-parachain-system = { version = "0.3.0-dev.1", default-features = false }
+cumulus-pallet-parachain-system = { version = "0.17.0", default-features = false }
 cumulus-pallet-xcm = { version = "0.16.0", default-features = false }
-# cumulus-pallet-xcmp-queue = { version = "0.16.1", default-features = false }
-cumulus-pallet-xcmp-queue = { version = "0.3.0-dev.1", default-features = false }
+cumulus-pallet-xcmp-queue = { version = "0.17.0", default-features = false }
 cumulus-primitives-core = { version = "0.15.0", default-features = false }
-cumulus-primitives-timestamp = { version = "0.15.1", default-features = false }
-# cumulus-primitives-utility = { version = "0.16.1", default-features = false }
-cumulus-primitives-utility = { version = "0.3.0-dev.1", default-features = false  }
+cumulus-primitives-timestamp = { version = "0.16.0", default-features = false }
+cumulus-primitives-utility = { version = "0.17.0", default-features = false }
 parachain-info = { git = "https://github.com/paritytech/cumulus", branch = "polkadot-v1.0.0", default-features = false }
 
 # Polkadot
