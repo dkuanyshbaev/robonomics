@@ -103,8 +103,7 @@ sp-version = { version = "37.0.0", default-features = false }
 sp-weights = { version = "31.0.0", default-features = false }
 
 # (native)
-# frame-benchmarking-cli = { version = "42.0.1" }
-frame-benchmarking-cli = { version = "28.0.0-dev.1" }
+frame-benchmarking-cli = { version = "43.0.0" }
 pallet-transaction-payment-rpc = { version = "40.0.0" }
 substrate-build-script-utils = { version = "11.0.0" }
 substrate-frame-rpc-system = { version = "38.0.0" }
