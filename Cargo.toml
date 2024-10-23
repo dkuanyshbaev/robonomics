@@ -35,7 +35,7 @@ maintenance = { status = "actively-developed" }
 targets = ["x86_64-unknown-linux-gnu"]
 
 [dependencies]
-color-eyre = { version = "0.6.1", default-features = false }
+color-eyre = { version = "0.6.3", default-features = false }
 tikv-jemallocator = "0.5.0"
 robonomics-node = { path = "node" }
 
@@ -104,7 +104,6 @@ sp-weights = { version = "31.0.0", default-features = false }
 
 # (native)
 frame-benchmarking-cli = { version = "43.0.0" }
-# frame-benchmarking-cli = { version = "28.0.0-dev.1" }
 pallet-transaction-payment-rpc = { version = "40.0.0" }
 substrate-build-script-utils = { version = "11.0.0" }
 substrate-frame-rpc-system = { version = "38.0.0" }
@@ -118,7 +117,7 @@ sc-consensus-aura = { version = "0.44.0" }
 sc-consensus-grandpa = { version = "0.29.1" }
 sc-executor = { version = "0.40.0" }
 sc-offchain = { version = "39.0.0" }
-sc-finality-grandpa = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v1.0.0" }
+sc-finality-grandpa = { version = "0.24.0" }
 sc-keystore = { version = "33.0.0" }
 sc-network = { version = "0.44.0" }
 sc-network-sync = { version = "0.43.0" }
@@ -137,7 +136,7 @@ sp-consensus-grandpa = { version = "21.0.0" }
 sp-keystore = { version = "0.40.0" }
 sp-keyring = { version = "39.0.0" }
 sp-timestamp = { version = "34.0.0" }
-try-runtime-cli = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v1.0.0" }
+try-runtime-cli = { version = "0.42.0" }
 
 # Substrate pallets
 # (wasm)
@@ -188,7 +187,7 @@ cumulus-pallet-xcmp-queue = { version = "0.17.0", default-features = false }
 cumulus-primitives-core = { version = "0.15.0", default-features = false }
 cumulus-primitives-timestamp = { version = "0.16.0", default-features = false }
 cumulus-primitives-utility = { version = "0.17.0", default-features = false }
-parachain-info = { git = "https://github.com/paritytech/cumulus", branch = "polkadot-v1.0.0", default-features = false }
+staging-parachain-info = { version = "0.17.0", default-features = false }
 
 # Polkadot
 # (native)
@@ -196,12 +195,15 @@ polkadot-cli = { version = "17.0.0" }
 
 # Polkadot
 # (wasm)
-polkadot-parachain = { git = "https://github.com/paritytech/polkadot", branch = "release-v1.0.0", default-features = false }
+polkadot-parachain = { version = "1.0.0" }
 polkadot-runtime-parachains = { version = "16.0.2", default-features = false }
 polkadot-primitives = { version = "15.0.0", default-features = false }
-xcm = { git = "https://github.com/paritytech/polkadot", branch = "release-v1.0.0", default-features = false }
-xcm-builder = { git = "https://github.com/paritytech/polkadot", branch = "release-v1.0.0", default-features = false }
-xcm-executor = { git = "https://github.com/paritytech/polkadot", branch = "release-v1.0.0", default-features = false }
+# xcm = { git = "https://github.com/paritytech/polkadot", branch = "release-v1.0.0", default-features = false }
+staging-xcm = { version = "14.2.0" }
+# xcm-builder = { git = "https://github.com/paritytech/polkadot", branch = "release-v1.0.0", default-features = false }
+staging-xcm-builder = { version = "17.0.0" }
+# xcm-executor = { git = "https://github.com/paritytech/polkadot", branch = "release-v1.0.0", default-features = false }
+staging-xcm-executor = { version = "17.0.0" }
 
 # Build deps
 substrate-wasm-builder = { version = "24.0.0" }
