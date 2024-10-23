@@ -53,6 +53,7 @@ use frame_system::{
     limits::{BlockLength, BlockWeights},
     EnsureRoot, EnsureSigned,
 };
+use pallet_aura::Authorities;
 use pallet_grandpa::{fg_primitives, AuthorityList as GrandpaAuthorityList};
 use pallet_transaction_payment::{CurrencyAdapter, Multiplier, TargetedFeeAdjustment};
 use pallet_transaction_payment_rpc_runtime_api::{FeeDetails, RuntimeDispatchInfo};
@@ -409,6 +410,8 @@ impl pallet_preimage::Config for Runtime {
     type Consideration = ();
 }
 
+use robonomics_primitives::CommunityAccount;
+use sp_runtime::traits::IdentifyAccount;
 parameter_types! {
     pub const ProposalBond: Permill = Permill::from_percent(5);
     pub const ProposalBondMinimum: Balance = 10 * XRT;
@@ -417,9 +420,11 @@ parameter_types! {
     pub const DataDepositPerByte: Balance = 1 * COASE;
     pub const TreasuryPalletId: PalletId = PalletId(*b"py/trsry");
     pub const MaxApprovals: u32 = 100;
+    pub TreasuryAccount: AccountId = CommunityAccount::Treasury.into_account();
 }
 
 use frame_support::traits::tokens::PayFromAccount;
+use frame_support::traits::tokens::UnityAssetBalanceConversion;
 use sp_runtime::traits::IdentityLookup;
 impl pallet_treasury::Config for Runtime {
     type PalletId = TreasuryPalletId;
@@ -438,12 +443,14 @@ impl pallet_treasury::Config for Runtime {
     type WeightInfo = ();
     type MaxApprovals = MaxApprovals;
     type SpendOrigin = frame_support::traits::NeverEnsureOrigin<u128>;
-    type AssetKind = u32;
-    type Beneficiary = u128;
+    type AssetKind = ();
+    type Beneficiary = Self::AccountId;
     type BeneficiaryLookup = IdentityLookup<Self::Beneficiary>;
-    // type Paymaster =
-    // type BalanceConverter =
-    // type PayoutPeriod =
+    type Paymaster = PayFromAccount<Balances, TreasuryAccount>;
+    type BalanceConverter = UnityAssetBalanceConversion;
+    type PayoutPeriod = ConstU32<0>;
+    #[cfg(feature = "runtime-benchmarks")]
+    type BenchmarkHelper = ();
 }
 
 parameter_types! {
@@ -769,9 +776,13 @@ impl_runtime_apis! {
             sp_consensus_aura::SlotDuration::from_millis(Aura::slot_duration())
         }
 
+        // fn authorities() -> Vec<AuraId> {
+        //     Aura::authorities().into_inner()
+        // }
         fn authorities() -> Vec<AuraId> {
-            Aura::authorities().into_inner()
+            Authorities::<Runtime>::get().into_inner()
         }
+
     }
 
     impl fg_primitives::GrandpaApi<Block> for Runtime {
