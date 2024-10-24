@@ -86,7 +86,8 @@ pub fn new_partial<Runtime>(
         FullClient<Runtime>,
         FullBackend,
         FullSelectChain,
-        sc_consensus::DefaultImportQueue<Block, FullClient<Runtime>>,
+        //sc_consensus::DefaultImportQueue<Block, FullClient<Runtime>>,
+        sc_consensus::DefaultImportQueue<Block>,
         sc_transaction_pool::FullPool<Block, FullClient<Runtime>>,
         (
             impl Fn(
@@ -117,15 +118,16 @@ where
         .transpose()?;
 
     let heap_pages = config
+    	.executor
         .default_heap_pages
         .map_or(DEFAULT_HEAP_ALLOC_STRATEGY, |h| HeapAllocStrategy::Static {
             extra_pages: h as _,
         });
 
     let executor = WasmExecutor::<HostFunctions>::builder()
-        .with_execution_method(config.wasm_method)
-        .with_max_runtime_instances(config.max_runtime_instances)
-        .with_runtime_cache_size(config.runtime_cache_size)
+        .with_execution_method(config.executor.wasm_method)
+        .with_max_runtime_instances(config.executor.max_runtime_instances)
+        .with_runtime_cache_size(config.executor.runtime_cache_size)
         .with_onchain_heap_alloc_strategy(heap_pages)
         .with_offchain_heap_alloc_strategy(heap_pages)
         .build();
@@ -278,7 +280,6 @@ where
             spawn_handle: task_manager.spawn_handle(),
             import_queue,
             block_announce_validator_builder: None,
-            warp_sync_params: Some(sc_service::WarpSyncParams::WithProvider(warp_sync)),
         })?;
 
     if config.offchain_worker.enabled {
