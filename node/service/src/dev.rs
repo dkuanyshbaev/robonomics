@@ -251,7 +251,10 @@ where
         other: (rpc_builder, block_import, grandpa_link, mut telemetry),
     } = new_partial(&config)?;
 
-    let mut net_config = sc_network::config::FullNetworkConfiguration::new(&config.network);
+    let mut net_config = sc_network::config::FullNetworkConfiguration::new(
+    	&config.network,
+    	config.prometheus_config.as_ref().map(|cfg| cfg.registry.clone()),
+    );
 
     let grandpa_protocol_name = sc_consensus_grandpa::protocol_standard_name(
         &client
