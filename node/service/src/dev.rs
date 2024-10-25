@@ -29,6 +29,8 @@ use sc_network::NetworkService;
 use sc_service::{config::Configuration, error::Error as ServiceError, TaskManager};
 use sc_transaction_pool_api::OffchainTransactionPoolFactory;
 use sp_api::ConstructRuntimeApi;
+use sp_api::CallApiAt;
+use sp_runtime::OpaqueExtrinsic;
 use sp_consensus_aura::sr25519::{AuthorityId as AuraId, AuthorityPair as AuraPair};
 use sp_runtime::traits::{BlakeTwo256, Block as BlockT};
 
@@ -57,8 +59,9 @@ pub trait RuntimeApiCollection:
     + sp_api::Metadata<Block>
     + sp_offchain::OffchainWorkerApi<Block>
     + sp_session::SessionKeys<Block>
+    + CallApiAt<sp_runtime::generic::Block<sp_runtime::generic::Header<u32, BlakeTwo256>, OpaqueExtrinsic>>
 where
-    <Self as sp_api::ApiExt<Block>>::StateBackend: sp_api::StateBackend<BlakeTwo256>,
+    <Self as sp_api::CallApiAt<Block>>::StateBackend: sc_client_api::StateBackend<BlakeTwo256>,
 {
 }
 
@@ -73,10 +76,15 @@ where
         + frame_system_rpc_runtime_api::AccountNonceApi<Block, AccountId, Nonce>
         + sp_api::Metadata<Block>
         + sp_offchain::OffchainWorkerApi<Block>
-        + sp_session::SessionKeys<Block>,
-    <Self as sp_api::ApiExt<Block>>::StateBackend: sp_api::StateBackend<BlakeTwo256>,
+        + sp_session::SessionKeys<Block>
+    	+ CallApiAt<sp_runtime::generic::Block<sp_runtime::generic::Header<u32, BlakeTwo256>, OpaqueExtrinsic>>,
+    <Self as sp_api::CallApiAt<Block>>::StateBackend: sc_client_api::StateBackend<BlakeTwo256>,
 {
 }
+
+/// The minimum period of blocks on which justifications will be
+/// imported and generated.
+const GRANDPA_JUSTIFICATION_PERIOD: u32 = 512;
 
 /// Partially initialize serivice & deps.
 pub fn new_partial<Runtime>(
@@ -86,7 +94,7 @@ pub fn new_partial<Runtime>(
         FullClient<Runtime>,
         FullBackend,
         FullSelectChain,
-        sc_consensus::DefaultImportQueue<Block, FullClient<Runtime>>,
+        sc_consensus::DefaultImportQueue<Block>,
         sc_transaction_pool::FullPool<Block, FullClient<Runtime>>,
         (
             impl Fn(
@@ -117,15 +125,16 @@ where
         .transpose()?;
 
     let heap_pages = config
+    	.executor
         .default_heap_pages
         .map_or(DEFAULT_HEAP_ALLOC_STRATEGY, |h| HeapAllocStrategy::Static {
             extra_pages: h as _,
         });
 
     let executor = WasmExecutor::<HostFunctions>::builder()
-        .with_execution_method(config.wasm_method)
-        .with_max_runtime_instances(config.max_runtime_instances)
-        .with_runtime_cache_size(config.runtime_cache_size)
+        .with_execution_method(config.executor.wasm_method)
+        .with_max_runtime_instances(config.executor.max_runtime_instances)
+        .with_runtime_cache_size(config.executor.runtime_cache_size)
         .with_onchain_heap_alloc_strategy(heap_pages)
         .with_offchain_heap_alloc_strategy(heap_pages)
         .build();
@@ -157,6 +166,7 @@ where
 
     let (grandpa_block_import, grandpa_link) = sc_consensus_grandpa::block_import(
         client.clone(),
+        GRANDPA_JUSTIFICATION_PERIOD,
         &(client.clone() as Arc<_>),
         select_chain.clone(),
         telemetry.as_ref().map(|x| x.handle()),

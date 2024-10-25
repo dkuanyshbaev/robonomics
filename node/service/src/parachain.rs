@@ -69,7 +69,7 @@ pub trait RuntimeApiCollection:
     + frame_system_rpc_runtime_api::AccountNonceApi<Block, AccountId, Nonce>
     + sp_session::SessionKeys<Block>
 where
-    sc_client_api::StateBackendFor<ParachainBackend, Block>: sp_api::StateBackend<BlakeTwo256>,
+    sc_client_api::StateBackendFor<ParachainBackend, Block>: sc_client_api::StateBackend<BlakeTwo256>,
 {
 }
 
@@ -84,7 +84,7 @@ where
         + pallet_transaction_payment_rpc_runtime_api::TransactionPaymentApi<Block, Balance>
         + frame_system_rpc_runtime_api::AccountNonceApi<Block, AccountId, Nonce>
         + sp_session::SessionKeys<Block>,
-    sc_client_api::StateBackendFor<ParachainBackend, Block>: sp_api::StateBackend<BlakeTwo256>,
+    sc_client_api::StateBackendFor<ParachainBackend, Block>: sc_client_api::StateBackend<BlakeTwo256>,
 {
 }
 
