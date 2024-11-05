@@ -61,7 +61,8 @@ type ParachainBlockImport<RuntimeApi> =
 pub trait RuntimeApiCollection:
     sp_transaction_pool::runtime_api::TaggedTransactionQueue<Block>
     + Metadata<Block>
-    + ApiExt<Block, StateBackend = sc_client_api::StateBackendFor<ParachainBackend, Block>>
+    // + ApiExt<Block, StateBackend = sc_client_api::StateBackendFor<ParachainBackend, Block>>
+    + ApiExt<Block>
     + sp_offchain::OffchainWorkerApi<Block>
     + sp_block_builder::BlockBuilder<Block>
     + cumulus_primitives_core::CollectCollationInfo<Block>
@@ -77,14 +78,16 @@ impl<Api> RuntimeApiCollection for Api
 where
     Api: sp_transaction_pool::runtime_api::TaggedTransactionQueue<Block>
         + Metadata<Block>
-        + ApiExt<Block, StateBackend = sc_client_api::StateBackendFor<ParachainBackend, Block>>
+        // + ApiExt<Block, StateBackend = sc_client_api::StateBackendFor<ParachainBackend, Block>>
+        + ApiExt<Block>
         + sp_offchain::OffchainWorkerApi<Block>
         + sp_block_builder::BlockBuilder<Block>
         + cumulus_primitives_core::CollectCollationInfo<Block>
         + pallet_transaction_payment_rpc_runtime_api::TransactionPaymentApi<Block, Balance>
         + frame_system_rpc_runtime_api::AccountNonceApi<Block, AccountId, Nonce>
         + sp_session::SessionKeys<Block>,
-    sc_client_api::StateBackendFor<ParachainBackend, Block>: sc_client_api::StateBackend<BlakeTwo256>,
+    sc_client_api::StateBackendFor<ParachainBackend, Block>:
+        sc_client_api::StateBackend<BlakeTwo256>,
 {
 }
 
@@ -95,7 +98,7 @@ pub fn build_open_import_queue<RuntimeApi>(
     config: &Configuration,
     _telemetry: Option<TelemetryHandle>,
     task_manager: &TaskManager,
-) -> Result<sc_consensus::DefaultImportQueue<Block, ParachainClient<RuntimeApi>>, sc_service::Error>
+) -> Result<sc_consensus::DefaultImportQueue<Block>, sc_service::Error>
 where
     RuntimeApi: ConstructRuntimeApi<Block, ParachainClient<RuntimeApi>> + Send + Sync + 'static,
     RuntimeApi::RuntimeApi: RuntimeApiCollection<
@@ -198,7 +201,7 @@ pub fn new_partial<RuntimeApi, BIQ>(
         ParachainClient<RuntimeApi>,
         ParachainBackend,
         (),
-        sc_consensus::DefaultImportQueue<Block, ParachainClient<RuntimeApi>>,
+        sc_consensus::DefaultImportQueue<Block>,
         sc_transaction_pool::FullPool<Block, ParachainClient<RuntimeApi>>,
         (
             ParachainBlockImport<RuntimeApi>,
@@ -219,10 +222,7 @@ where
         &Configuration,
         Option<TelemetryHandle>,
         &TaskManager,
-    ) -> Result<
-        sc_consensus::DefaultImportQueue<Block, ParachainClient<RuntimeApi>>,
-        sc_service::Error,
-    >,
+    ) -> Result<sc_consensus::DefaultImportQueue<Block>, sc_service::Error>,
 {
     let telemetry = config
         .telemetry_endpoints
@@ -236,15 +236,16 @@ where
         .transpose()?;
 
     let heap_pages = config
+        .executor
         .default_heap_pages
         .map_or(DEFAULT_HEAP_ALLOC_STRATEGY, |h| HeapAllocStrategy::Static {
             extra_pages: h as _,
         });
 
     let executor = WasmExecutor::<HostFunctions>::builder()
-        .with_execution_method(config.wasm_method)
-        .with_max_runtime_instances(config.max_runtime_instances)
-        .with_runtime_cache_size(config.runtime_cache_size)
+        .with_execution_method(config.executor.wasm_method)
+        .with_max_runtime_instances(config.executor.max_runtime_instances)
+        .with_runtime_cache_size(config.executor.runtime_cache_size)
         .with_onchain_heap_alloc_strategy(heap_pages)
         .with_offchain_heap_alloc_strategy(heap_pages)
         .build();
@@ -320,10 +321,7 @@ where
         &Configuration,
         Option<TelemetryHandle>,
         &TaskManager,
-    ) -> Result<
-        sc_consensus::DefaultImportQueue<Block, ParachainClient<RuntimeApi>>,
-        sc_service::Error,
-    >,
+    ) -> Result<sc_consensus::DefaultImportQueue<Block>, sc_service::Error>,
     BIC: FnOnce(
         ParaId,
         AccountId,
