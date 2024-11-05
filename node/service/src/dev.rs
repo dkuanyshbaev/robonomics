@@ -28,11 +28,12 @@ use sc_executor::{HeapAllocStrategy, WasmExecutor, DEFAULT_HEAP_ALLOC_STRATEGY};
 use sc_network::NetworkService;
 use sc_service::{config::Configuration, error::Error as ServiceError, TaskManager};
 use sc_transaction_pool_api::OffchainTransactionPoolFactory;
-use sp_api::ConstructRuntimeApi;
-use sp_api::CallApiAt;
-use sp_runtime::OpaqueExtrinsic;
+use sp_api::{CallApiAt, ConstructRuntimeApi};
 use sp_consensus_aura::sr25519::{AuthorityId as AuraId, AuthorityPair as AuraPair};
-use sp_runtime::traits::{BlakeTwo256, Block as BlockT};
+use sp_runtime::{
+    traits::{BlakeTwo256, Block as BlockT},
+    OpaqueExtrinsic,
+};
 
 use futures::FutureExt;
 use std::sync::Arc;
@@ -59,7 +60,9 @@ pub trait RuntimeApiCollection:
     + sp_api::Metadata<Block>
     + sp_offchain::OffchainWorkerApi<Block>
     + sp_session::SessionKeys<Block>
-    + CallApiAt<sp_runtime::generic::Block<sp_runtime::generic::Header<u32, BlakeTwo256>, OpaqueExtrinsic>>
+    + CallApiAt<
+        sp_runtime::generic::Block<sp_runtime::generic::Header<u32, BlakeTwo256>, OpaqueExtrinsic>,
+    >
 where
     <Self as sp_api::CallApiAt<Block>>::StateBackend: sc_client_api::StateBackend<BlakeTwo256>,
 {
@@ -77,7 +80,12 @@ where
         + sp_api::Metadata<Block>
         + sp_offchain::OffchainWorkerApi<Block>
         + sp_session::SessionKeys<Block>
-    	+ CallApiAt<sp_runtime::generic::Block<sp_runtime::generic::Header<u32, BlakeTwo256>, OpaqueExtrinsic>>,
+        + CallApiAt<
+            sp_runtime::generic::Block<
+                sp_runtime::generic::Header<u32, BlakeTwo256>,
+                OpaqueExtrinsic,
+            >,
+        >,
     <Self as sp_api::CallApiAt<Block>>::StateBackend: sc_client_api::StateBackend<BlakeTwo256>,
 {
 }
@@ -125,7 +133,7 @@ where
         .transpose()?;
 
     let heap_pages = config
-    	.executor
+        .executor
         .default_heap_pages
         .map_or(DEFAULT_HEAP_ALLOC_STRATEGY, |h| HeapAllocStrategy::Static {
             extra_pages: h as _,
