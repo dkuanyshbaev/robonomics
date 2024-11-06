@@ -208,7 +208,6 @@ impl pallet_balances::Config for Runtime {
     type FreezeIdentifier = ();
     type MaxFreezes = ();
     type RuntimeHoldReason = ();
-    type MaxHolds = ();
 }
 
 parameter_types! {
@@ -340,10 +339,7 @@ impl pallet_identity::Config for Runtime {
     type RuntimeEvent = RuntimeEvent;
     type Currency = Balances;
     type BasicDeposit = BasicDeposit;
-    type FieldDeposit = FieldDeposit;
-    type SubAccountDeposit = SubAccountDeposit;
     type MaxSubAccounts = MaxSubAccounts;
-    type MaxAdditionalFields = MaxAdditionalFields;
     type MaxRegistrars = MaxRegistrars;
     type Slashed = ();
     type ForceOrigin = MoreThanHalfTechnicals;
@@ -383,8 +379,6 @@ impl pallet_preimage::Config for Runtime {
     type RuntimeEvent = RuntimeEvent;
     type Currency = Balances;
     type ManagerOrigin = EnsureRoot<AccountId>;
-    type BaseDeposit = PreimageBaseDeposit;
-    type ByteDeposit = PreimageByteDeposit;
 }
 
 parameter_types! {
@@ -400,14 +394,9 @@ parameter_types! {
 impl pallet_treasury::Config for Runtime {
     type PalletId = TreasuryPalletId;
     type Currency = Balances;
-    type ApproveOrigin = MoreThanHalfTechnicals;
     type RejectOrigin = MoreThanHalfTechnicals;
     type RuntimeEvent = RuntimeEvent;
-    type ProposalBond = ProposalBond;
-    type ProposalBondMinimum = ProposalBondMinimum;
-    type ProposalBondMaximum = ();
     type SpendPeriod = SpendPeriod;
-    type OnSlash = ();
     type Burn = Burn;
     type BurnDestination = ();
     type SpendFunds = ();
@@ -547,22 +536,22 @@ parameter_types! {
     pub const MinimalBid: Balance = 1 * XRT;
 }
 
-impl pallet_robonomics_rws::Config for Runtime {
-    type Call = RuntimeCall;
-    type Time = Timestamp;
-    type Moment = Moment;
-    type AuctionIndex = u32;
-    type AuctionCurrency = Balances;
-    type RuntimeEvent = RuntimeEvent;
-    type ReferenceCallWeight = ReferenceCallWeight;
-    type AuctionDuration = AuctionDuration;
-    type AuctionCost = AuctionCost;
-    type MinimalBid = MinimalBid;
-}
+// impl pallet_robonomics_rws::Config for Runtime {
+//     type Call = RuntimeCall;
+//     type Time = Timestamp;
+//     type Moment = Moment;
+//     type AuctionIndex = u32;
+//     type AuctionCurrency = Balances;
+//     type RuntimeEvent = RuntimeEvent;
+//     type ReferenceCallWeight = ReferenceCallWeight;
+//     type AuctionDuration = AuctionDuration;
+//     type AuctionCost = AuctionCost;
+//     type MinimalBid = MinimalBid;
+// }
 
-impl pallet_robonomics_digital_twin::Config for Runtime {
-    type RuntimeEvent = RuntimeEvent;
-}
+// impl pallet_robonomics_digital_twin::Config for Runtime {
+//     type RuntimeEvent = RuntimeEvent;
+// }
 
 impl pallet_robonomics_liability::Config for Runtime {
     type Agreement = pallet_robonomics_liability::SignedAgreement<
@@ -740,7 +729,8 @@ impl_runtime_apis! {
         }
 
         fn authorities() -> Vec<AuraId> {
-            Aura::authorities().into_inner()
+            // Aura::authorities_len().into_inner()
+            pallet_aura::Authorities::<Runtime>::get().into_inner()
         }
     }
 
