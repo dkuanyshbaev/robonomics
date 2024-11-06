@@ -208,6 +208,7 @@ impl pallet_balances::Config for Runtime {
     type FreezeIdentifier = ();
     type MaxFreezes = ();
     type RuntimeHoldReason = ();
+    type RuntimeFreezeReason = RuntimeFreezeReason;
 }
 
 parameter_types! {
@@ -253,6 +254,7 @@ impl pallet_vesting::Config for Runtime {
     type MinVestedTransfer = MinVestedTransfer;
     type WeightInfo = pallet_vesting::weights::SubstrateWeight<Runtime>;
     type UnvestedFundsAllowedWithdrawReasons = UnvestedFundsAllowedWithdrawReasons;
+    type BlockNumberProvider = System;
     // `VestingInfo` encode length is 36bytes. 28 schedules gets encoded as 1009 bytes, which is the
     // highest number of schedules that encodes less than 2^10.
     const MAX_VESTING_SCHEDULES: u32 = 28;
@@ -313,6 +315,7 @@ impl pallet_aura::Config for Runtime {
     type AuthorityId = AuraId;
     type DisabledValidators = ();
     type AllowMultipleBlocksPerSlot = ConstBool<false>;
+    type SlotDuration = ConstU64<SLOT_DURATION>;
 }
 
 impl pallet_grandpa::Config for Runtime {
@@ -403,6 +406,12 @@ impl pallet_treasury::Config for Runtime {
     type WeightInfo = ();
     type MaxApprovals = MaxApprovals;
     type SpendOrigin = frame_support::traits::NeverEnsureOrigin<u128>;
+    // type AssetKind = u32;
+    // type Beneficiary = AccountId;
+    // type BeneficiaryLookup = Indices;
+    // type Paymaster = PayAssetFromAccount<Assets, TreasuryAccount>;
+    // type BalanceConverter = AssetRate;
+    // type PayoutPeriod = SpendPayoutPeriod;
 }
 
 parameter_types! {
