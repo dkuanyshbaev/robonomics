@@ -37,7 +37,7 @@ use robonomics_primitives::{AccountId, Balance, Block, Nonce};
 use sc_consensus::ImportQueue;
 use sc_executor::{HeapAllocStrategy, WasmExecutor, DEFAULT_HEAP_ALLOC_STRATEGY};
 use sc_network::{config::FullNetworkConfiguration, NetworkBlock};
-use sc_network_sync::SyncingService;
+use sc_network_sync::{service::network::Network, SyncingService};
 use sc_service::{Configuration, PartialComponents, TFullBackend, TFullClient, TaskManager};
 use sc_telemetry::{Telemetry, TelemetryHandle, TelemetryWorker, TelemetryWorkerHandle};
 use sp_api::{ApiExt, ConstructRuntimeApi, Metadata};
@@ -101,9 +101,10 @@ pub fn build_open_import_queue<RuntimeApi>(
 ) -> Result<sc_consensus::DefaultImportQueue<Block>, sc_service::Error>
 where
     RuntimeApi: ConstructRuntimeApi<Block, ParachainClient<RuntimeApi>> + Send + Sync + 'static,
-    RuntimeApi::RuntimeApi: RuntimeApiCollection<
-        StateBackend = sc_client_api::StateBackendFor<ParachainBackend, Block>,
-    >,
+    RuntimeApi::RuntimeApi: RuntimeApiCollection,
+    // RuntimeApi::RuntimeApi: RuntimeApiCollection<
+    //     StateBackend = sc_client_api::StateBackendFor<ParachainBackend, Block>,
+    // >,
 {
     let registry = config.prometheus_registry();
     cumulus_client_consensus_relay_chain::import_queue(
@@ -136,9 +137,10 @@ pub fn build_open_consensus<RuntimeApi>(
 ) -> Result<Box<dyn ParachainConsensus<Block>>, sc_service::Error>
 where
     RuntimeApi: ConstructRuntimeApi<Block, ParachainClient<RuntimeApi>> + Send + Sync + 'static,
-    RuntimeApi::RuntimeApi: RuntimeApiCollection<
-        StateBackend = sc_client_api::StateBackendFor<ParachainBackend, Block>,
-    >,
+    RuntimeApi::RuntimeApi: RuntimeApiCollection,
+    // RuntimeApi::RuntimeApi: RuntimeApiCollection<
+    //     StateBackend = sc_client_api::StateBackendFor<ParachainBackend, Block>,
+    // >,
 {
     let proposer_factory = sc_basic_authorship::ProposerFactory::with_proof_recording(
         task_manager.spawn_handle(),
@@ -213,9 +215,10 @@ pub fn new_partial<RuntimeApi, BIQ>(
 >
 where
     RuntimeApi: ConstructRuntimeApi<Block, ParachainClient<RuntimeApi>> + Send + Sync + 'static,
-    RuntimeApi::RuntimeApi: RuntimeApiCollection<
-        StateBackend = sc_client_api::StateBackendFor<ParachainBackend, Block>,
-    >,
+    RuntimeApi::RuntimeApi: RuntimeApiCollection,
+    // RuntimeApi::RuntimeApi: RuntimeApiCollection<
+    //     StateBackend = sc_client_api::StateBackendFor<ParachainBackend, Block>,
+    // >,
     BIQ: FnOnce(
         Arc<ParachainClient<RuntimeApi>>,
         ParachainBlockImport<RuntimeApi>,
@@ -310,9 +313,10 @@ pub async fn new_service<RuntimeApi, RB, BIQ, BIC>(
 ) -> sc_service::error::Result<(TaskManager, Arc<ParachainClient<RuntimeApi>>)>
 where
     RuntimeApi: ConstructRuntimeApi<Block, ParachainClient<RuntimeApi>> + Send + Sync + 'static,
-    RuntimeApi::RuntimeApi: RuntimeApiCollection<
-        StateBackend = sc_client_api::StateBackendFor<ParachainBackend, Block>,
-    >,
+    RuntimeApi::RuntimeApi: RuntimeApiCollection,
+    // RuntimeApi::RuntimeApi: RuntimeApiCollection<
+    //     StateBackend = sc_client_api::StateBackendFor<ParachainBackend, Block>,
+    // >,
     RB: Fn(Arc<ParachainClient<RuntimeApi>>) -> Result<jsonrpsee::RpcModule<()>, sc_service::Error>
         + 'static,
     BIQ: FnOnce(
@@ -362,7 +366,15 @@ where
     let prometheus_registry = parachain_config.prometheus_registry().cloned();
     let transaction_pool = params.transaction_pool.clone();
     let import_queue_service = params.import_queue.service();
-    let net_config = FullNetworkConfiguration::new(&parachain_config.network);
+
+    // let net_config = FullNetworkConfiguration::new(&parachain_config.network);
+    let mut net_config = FullNetworkConfiguration::<_, _, Network>::new(
+        &parachain_config.network,
+        parachain_config
+            .prometheus_config
+            .as_ref()
+            .map(|cfg| cfg.registry.clone()),
+    );
 
     let (network, system_rpc_tx, tx_handler_controller, start_network, sync_service) =
         build_network(BuildNetworkParams {
@@ -501,9 +513,10 @@ pub async fn start_generic_robonomics_parachain<RuntimeApi>(
 ) -> sc_service::error::Result<TaskManager>
 where
     RuntimeApi: ConstructRuntimeApi<Block, ParachainClient<RuntimeApi>> + Send + Sync + 'static,
-    RuntimeApi::RuntimeApi: RuntimeApiCollection<
-        StateBackend = sc_client_api::StateBackendFor<ParachainBackend, Block>,
-    >,
+    RuntimeApi::RuntimeApi: RuntimeApiCollection,
+    // RuntimeApi::RuntimeApi: RuntimeApiCollection<
+    //     StateBackend = sc_client_api::StateBackendFor<ParachainBackend, Block>,
+    // >,
 {
     new_service::<RuntimeApi, _, _, _>(
         parachain_config,
