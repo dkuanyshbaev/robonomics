@@ -26,7 +26,8 @@ use cumulus_client_consensus_relay_chain::{
 };
 use cumulus_client_service::{
     build_network, build_relay_chain_interface, prepare_node_config, start_collator,
-    start_full_node, BuildNetworkParams, StartCollatorParams, StartFullNodeParams,
+    start_full_node, BuildNetworkParams, CollatorSybilResistance, StartCollatorParams,
+    StartFullNodeParams,
 };
 use cumulus_primitives_core::ParaId;
 use cumulus_primitives_parachain_inherent::ParachainInherentData;
@@ -386,6 +387,7 @@ where
             spawn_handle: task_manager.spawn_handle(),
             relay_chain_interface: relay_chain_interface.clone(),
             import_queue: params.import_queue,
+            sybil_resistance_level: CollatorSybilResistance::Resistant,
         })
         .await?;
 
