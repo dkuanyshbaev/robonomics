@@ -267,7 +267,13 @@ where
         other: (rpc_builder, block_import, grandpa_link, mut telemetry),
     } = new_partial(&config)?;
 
-    let mut net_config = sc_network::config::FullNetworkConfiguration::new(&config.network);
+    let mut net_config = sc_network::config::FullNetworkConfiguration::new(
+        &config.network,
+        config
+            .prometheus_config
+            .as_ref()
+            .map(|cfg| cfg.registry.clone()),
+    );
 
     let grandpa_protocol_name = sc_consensus_grandpa::protocol_standard_name(
         &client
@@ -277,6 +283,17 @@ where
             .expect("Genesis block exists; qed"),
         &config.chain_spec,
     );
+    // let metrics = Network::register_notification_metrics(
+    //     config.prometheus_config.as_ref().map(|cfg| &cfg.registry),
+    // );
+    // let peer_store_handle = net_config.peer_store_handle();
+    // let (grandpa_protocol_config, grandpa_notification_service) =
+    //     sc_consensus_grandpa::grandpa_peers_set_config(
+    //         grandpa_protocol_name.clone(),
+    //         metrics.clone(),
+    //         Arc::clone(&peer_store_handle),
+    //     );
+    // net_config.add_notification_protocol(grandpa_protocol_config);
     net_config.add_notification_protocol(sc_consensus_grandpa::grandpa_peers_set_config(
         grandpa_protocol_name.clone(),
     ));

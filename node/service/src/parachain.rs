@@ -33,7 +33,7 @@ use cumulus_primitives_core::ParaId;
 use cumulus_primitives_parachain_inherent::ParachainInherentData;
 use cumulus_relay_chain_interface::RelayChainInterface;
 use parity_scale_codec::Encode;
-use robonomics_primitives::{AccountId, Balance, Block, Nonce};
+use robonomics_primitives::{AccountId, Balance, Block, Hash, Nonce};
 
 use sc_consensus::ImportQueue;
 use sc_executor::{HeapAllocStrategy, WasmExecutor, DEFAULT_HEAP_ALLOC_STRATEGY};
@@ -369,7 +369,7 @@ where
     let import_queue_service = params.import_queue.service();
 
     // let net_config = FullNetworkConfiguration::new(&parachain_config.network);
-    let mut net_config = FullNetworkConfiguration::<_, _, Network>::new(
+    let net_config = FullNetworkConfiguration::<_, _, sc_network::NetworkWorker<Block, Hash>>::new(
         &parachain_config.network,
         parachain_config
             .prometheus_config
