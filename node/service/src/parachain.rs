@@ -299,6 +299,82 @@ where
     })
 }
 
+// new version
+// pub fn new_partial(config: &Configuration) -> Result<Service, sc_service::Error> {
+//     let telemetry = config
+//         .telemetry_endpoints
+//         .clone()
+//         .filter(|x| !x.is_empty())
+//         .map(|endpoints| -> Result<_, sc_telemetry::Error> {
+//             let worker = TelemetryWorker::new(16)?;
+//             let telemetry = worker.handle().new_telemetry(endpoints);
+//             Ok((worker, telemetry))
+//         })
+//         .transpose()?;
+//
+//     let heap_pages = config
+//         .executor
+//         .default_heap_pages
+//         .map_or(DEFAULT_HEAP_ALLOC_STRATEGY, |h| HeapAllocStrategy::Static {
+//             extra_pages: h as _,
+//         });
+//
+//     let executor = ParachainExecutor::builder()
+//         .with_execution_method(config.executor.wasm_method)
+//         .with_onchain_heap_alloc_strategy(heap_pages)
+//         .with_offchain_heap_alloc_strategy(heap_pages)
+//         .with_max_runtime_instances(config.executor.max_runtime_instances)
+//         .with_runtime_cache_size(config.executor.runtime_cache_size)
+//         .build();
+//
+//     let (client, backend, keystore_container, task_manager) =
+//         sc_service::new_full_parts_record_import::<Block, RuntimeApi, _>(
+//             config,
+//             telemetry.as_ref().map(|(_, telemetry)| telemetry.handle()),
+//             executor,
+//             true,
+//         )?;
+//     let client = Arc::new(client);
+//
+//     let telemetry_worker_handle = telemetry.as_ref().map(|(worker, _)| worker.handle());
+//
+//     let telemetry = telemetry.map(|(worker, telemetry)| {
+//         task_manager
+//             .spawn_handle()
+//             .spawn("telemetry", None, worker.run());
+//         telemetry
+//     });
+//
+//     let transaction_pool = sc_transaction_pool::BasicPool::new_full(
+//         config.transaction_pool.clone(),
+//         config.role.is_authority().into(),
+//         config.prometheus_registry(),
+//         task_manager.spawn_essential_handle(),
+//         client.clone(),
+//     );
+//
+//     let block_import = ParachainBlockImport::new(client.clone(), backend.clone());
+//
+//     let import_queue = build_import_queue(
+//         client.clone(),
+//         block_import.clone(),
+//         config,
+//         telemetry.as_ref().map(|telemetry| telemetry.handle()),
+//         &task_manager,
+//     );
+//
+//     Ok(PartialComponents {
+//         backend,
+//         client,
+//         import_queue,
+//         keystore_container,
+//         task_manager,
+//         transaction_pool,
+//         select_chain: (),
+//         other: (block_import, telemetry, telemetry_worker_handle),
+//     })
+// }
+
 /// Creates new service from the configuration.
 #[sc_tracing::logging::prefix_logs_with("Parachain")]
 pub async fn new_service<RuntimeApi, RB, BIQ, BIC>(
@@ -395,12 +471,13 @@ where
         let client = client.clone();
         let transaction_pool = transaction_pool.clone();
 
-        Box::new(move |deny_unsafe, _| {
+        // Box::new(move |deny_unsafe, _| {
+        Box::new(move |_| {
             let deps = robonomics_rpc_core::CoreDeps {
                 client: client.clone(),
                 pool: transaction_pool.clone(),
                 ext_rpc: rpc_ext_builder(client.clone())?,
-                deny_unsafe,
+                // deny_unsafe,
             };
 
             robonomics_rpc_core::create_core_rpc(deps).map_err(Into::into)

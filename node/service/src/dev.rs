@@ -106,7 +106,7 @@ pub fn new_partial<Runtime>(
         sc_transaction_pool::FullPool<Block, FullClient<Runtime>>,
         (
             impl Fn(
-                robonomics_rpc_core::DenyUnsafe,
+                // robonomics_rpc_core::DenyUnsafe,
                 sc_rpc::SubscriptionTaskExecutor,
             ) -> Result<jsonrpsee::RpcModule<()>, sc_service::Error>,
             FullGrandpaBlockImport<Runtime>,
@@ -209,11 +209,12 @@ where
         let client = client.clone();
         let pool = transaction_pool.clone();
 
-        move |deny_unsafe, _| {
+        // move |deny_unsafe, _| {
+        move |_| {
             let deps = robonomics_rpc_core::CoreDeps {
                 client: client.clone(),
                 pool: pool.clone(),
-                deny_unsafe,
+                // deny_unsafe,
                 // TODO: enable RPC extensions for dev node
                 ext_rpc: jsonrpsee::RpcModule::new(()),
             };
