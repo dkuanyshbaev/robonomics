@@ -63,7 +63,6 @@ where
     use pallet_transaction_payment_rpc::{TransactionPayment, TransactionPaymentApiServer};
     use substrate_frame_rpc_system::{System, SystemApiServer};
 
-    // let mut io = RpcModule::new(());
     let mut io = RpcExtension::new(());
     let CoreDeps {
         client,
