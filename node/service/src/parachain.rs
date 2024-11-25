@@ -24,13 +24,13 @@ use cumulus_client_consensus_common::{
 use cumulus_client_consensus_relay_chain::{
     build_relay_chain_consensus, BuildRelayChainConsensusParams,
 };
+use cumulus_client_parachain_inherent::{ParachainInherentData, ParachainInherentDataProvider};
 use cumulus_client_service::{
     build_network, build_relay_chain_interface, prepare_node_config, start_collator,
     start_full_node, BuildNetworkParams, CollatorSybilResistance, StartCollatorParams,
     StartFullNodeParams,
 };
 use cumulus_primitives_core::ParaId;
-use cumulus_primitives_parachain_inherent::ParachainInherentData;
 use cumulus_relay_chain_interface::RelayChainInterface;
 use parity_scale_codec::Encode;
 use robonomics_primitives::{AccountId, Balance, Block, Hash, Nonce};
@@ -160,7 +160,7 @@ where
             let encoded_account = lighthouse_account.encode();
             let relay_chain_interface = relay_chain_interface.clone();
             async move {
-                let parachain_inherent = ParachainInherentData::create_at(
+                let parachain_inherent = ParachainInherentDataProvider::create_at(
                     relay_parent,
                     &relay_chain_interface,
                     &validation_data,

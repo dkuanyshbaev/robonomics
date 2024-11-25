@@ -1833,6 +1833,29 @@ dependencies = [
 ]
 
 [[package]]
+name = "cumulus-client-parachain-inherent"
+version = "0.12.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "62e003d5756b4b8e1c59a7f9a19e1c1469ecfdec34e6fcf6511a7d4bc57500b0"
+dependencies = [
+ "async-trait",
+ "cumulus-primitives-core",
+ "cumulus-primitives-parachain-inherent",
+ "cumulus-relay-chain-interface",
+ "cumulus-test-relay-sproof-builder",
+ "parity-scale-codec",
+ "sc-client-api",
+ "sp-api 34.0.0",
+ "sp-crypto-hashing",
+ "sp-inherents 34.0.0",
+ "sp-runtime 39.0.2",
+ "sp-state-machine 0.43.0",
+ "sp-storage 21.0.0",
+ "sp-trie 37.0.0",
+ "tracing",
+]
+
+[[package]]
 name = "cumulus-client-pov-recovery"
 version = "0.18.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2197,6 +2220,20 @@ dependencies = [
  "tokio-util",
  "tracing",
  "url",
+]
+
+[[package]]
+name = "cumulus-test-relay-sproof-builder"
+version = "0.16.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e570e41c3f05a8143ebff967bbb0c7dcaaa6f0bebd8639b9418b8005b13eda03"
+dependencies = [
+ "cumulus-primitives-core",
+ "parity-scale-codec",
+ "polkadot-primitives",
+ "sp-runtime 39.0.2",
+ "sp-state-machine 0.43.0",
+ "sp-trie 37.0.0",
 ]
 
 [[package]]
@@ -9746,6 +9783,7 @@ dependencies = [
  "cumulus-client-consensus-common",
  "cumulus-client-consensus-relay-chain",
  "cumulus-client-network",
+ "cumulus-client-parachain-inherent",
  "cumulus-client-service",
  "cumulus-primitives-core",
  "cumulus-primitives-parachain-inherent",
