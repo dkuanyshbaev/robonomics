@@ -2480,6 +2480,7 @@ dependencies = [
  "pallet-grandpa",
  "pallet-identity",
  "pallet-membership",
+ "pallet-migrations",
  "pallet-multisig",
  "pallet-preimage",
  "pallet-robonomics-datalog",
@@ -6872,6 +6873,23 @@ dependencies = [
  "sp-io 38.0.0",
  "sp-runtime 39.0.2",
  "sp-weights 31.0.0",
+]
+
+[[package]]
+name = "pallet-migrations"
+version = "8.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9b417fc975636bce94e7c6d707e42d0706d67dfa513e72f5946918e1044beef1"
+dependencies = [
+ "docify",
+ "frame-support 38.0.0",
+ "frame-system",
+ "impl-trait-for-tuples",
+ "log",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-core 34.0.0",
+ "sp-runtime 39.0.2",
 ]
 
 [[package]]

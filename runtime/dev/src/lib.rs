@@ -54,6 +54,7 @@ use frame_system::{
     EnsureRoot, EnsureSigned,
 };
 use pallet_grandpa::{fg_primitives, AuthorityList as GrandpaAuthorityList};
+use pallet_identity::legacy::IdentityInfo;
 use pallet_transaction_payment::{CurrencyAdapter, Multiplier, TargetedFeeAdjustment};
 use pallet_transaction_payment_rpc_runtime_api::{FeeDetails, RuntimeDispatchInfo};
 use robonomics_primitives::{
@@ -143,6 +144,25 @@ parameter_types! {
     pub SS58Prefix: u8 = 32;
 }
 
+// parameter_types! {
+//     pub MbmServiceWeight: Weight = Perbill::from_percent(80) * RuntimeBlockWeights::get().max_block;
+// }
+//
+// impl pallet_migrations::Config for Runtime {
+//     type RuntimeEvent = RuntimeEvent;
+//     #[cfg(not(feature = "runtime-benchmarks"))]
+//     type Migrations = ();
+//     // Benchmarks need mocked migrations to guarantee that they succeed.
+//     #[cfg(feature = "runtime-benchmarks")]
+//     type Migrations = pallet_migrations::mock_helpers::MockedMigrations;
+//     type CursorMaxLen = ConstU32<65_536>;
+//     type IdentifierMaxLen = ConstU32<256>;
+//     type MigrationStatusHandler = ();
+//     type FailedMigrationHandler = frame_support::migrations::FreezeChainOnFailedMigration;
+//     type MaxServiceWeight = MbmServiceWeight;
+//     type WeightInfo = pallet_migrations::weights::SubstrateWeight<Runtime>;
+// }
+
 impl frame_system::Config for Runtime {
     type BaseCallFilter = frame_support::traits::Everything;
     type BlockWeights = RuntimeBlockWeights;
@@ -167,6 +187,12 @@ impl frame_system::Config for Runtime {
     type MaxConsumers = ConstU32<16>;
     type RuntimeOrigin = RuntimeOrigin;
     type RuntimeCall = RuntimeCall;
+    type RuntimeTask = RuntimeTask;
+    type SingleBlockMigrations = ();
+    //type MultiBlockMigrator = pallet_migrations::Pallet<Runtime>;
+    type PreInherents = ();
+    type PostInherents = ();
+    type PostTransactions = ();
 }
 
 parameter_types! {
@@ -327,12 +353,15 @@ impl pallet_grandpa::Config for Runtime {
 
     type KeyOwnerProof = sp_core::Void;
     type EquivocationReportSystem = ();
+
+    //type MaxNominators = ConstU32<0>;
 }
 
 parameter_types! {
     pub const BasicDeposit: Balance = 10 * XRT;       // 258 bytes on-chain
     pub const FieldDeposit: Balance = 250 * COASE;    // 66 bytes on-chain
     pub const SubAccountDeposit: Balance = 2 * XRT;   // 53 bytes on-chain
+    //pub const ByteDeposit: Balance = deposit(0, 1);
     pub const MaxSubAccounts: u32 = 100;
     pub const MaxAdditionalFields: u32 = 100;
     pub const MaxRegistrars: u32 = 20;
@@ -348,6 +377,17 @@ impl pallet_identity::Config for Runtime {
     type ForceOrigin = MoreThanHalfTechnicals;
     type RegistrarOrigin = MoreThanHalfTechnicals;
     type WeightInfo = ();
+
+    //type ByteDeposit = ByteDeposit;
+    type SubAccountDeposit = SubAccountDeposit;
+    type IdentityInformation = IdentityInfo<MaxAdditionalFields>;
+    type OffchainSignature = Signature;
+
+    //type SigningPublicKey = /* Type */;
+    //type UsernameAuthorityOrigin = /* Type */;
+    //type PendingUsernameExpiration = /* Type */;
+    //type MaxSuffixLength = /* Type */;
+    //type MaxUsernameLength = /* Type */;
 }
 
 parameter_types! {

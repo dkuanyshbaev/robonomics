@@ -152,6 +152,7 @@ pallet-collective = { version = "38.0.0", default-features = false }
 pallet-democracy = { version = "38.0.0", default-features = false }
 pallet-membership = { version = "38.0.0", default-features = false }
 pallet-multisig = { version = "38.0.0", default-features = false }
+pallet-migrations = { version = "8.0.0", default-features = false }
 pallet-preimage = { version = "38.0.0", default-features = false }
 pallet-scheduler = { version = "39.0.0", default-features = false }
 pallet-treasury = { version = "37.0.0", default-features = false }
