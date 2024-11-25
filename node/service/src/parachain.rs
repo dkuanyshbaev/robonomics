@@ -184,14 +184,24 @@ where
 }
 
 /// Checks that the hardware meets the requirements and print a warning otherwise.
-fn warn_if_slow_hardware(hwbench: &sc_sysinfo::HwBench) {
+fn warn_if_slow_hardware(hwbench: &sc_sysinfo::HwBench, validator: bool) {
     // Polkadot parachains should generally use these requirements to ensure that
     // will not take longer than expected to import its blocks.
-    if !frame_benchmarking_cli::SUBSTRATE_REFERENCE_HARDWARE.check_hardware(hwbench) {
-        log::warn!(
-            "⚠️  The hardware does not meet the minimal requirements for role 'Authority' find out more at:\n\
-            https://wiki.polkadot.network/docs/maintain-guides-how-to-validate-polkadot#reference-hardware"
-        );
+    // if !frame_benchmarking_cli::SUBSTRATE_REFERENCE_HARDWARE.check_hardware(hwbench, false) {
+    //     log::warn!(
+    //         "⚠️  The hardware does not meet the minimal requirements for role 'Authority' find out more at:\n\
+    //         https://wiki.polkadot.network/docs/maintain-guides-how-to-validate-polkadot#reference-hardware"
+    //     );
+    // }
+
+    match frame_benchmarking_cli::SUBSTRATE_REFERENCE_HARDWARE.check_hardware(hwbench, false) {
+        Err(err) if validator => {
+            log::warn!(
+                "⚠️  The hardware does not meet the minimal requirements {} for role 'Authority'.",
+                err
+            );
+        }
+        _ => {}
     }
 }
 
@@ -443,6 +453,7 @@ where
     let prometheus_registry = parachain_config.prometheus_registry().cloned();
     let transaction_pool = params.transaction_pool.clone();
     let import_queue_service = params.import_queue.service();
+    let validator = parachain_config.role.is_authority();
 
     // let net_config = FullNetworkConfiguration::new(&parachain_config.network);
     let net_config = FullNetworkConfiguration::<_, _, sc_network::NetworkWorker<Block, Hash>>::new(
@@ -502,7 +513,7 @@ where
     if let Some(hwbench) = hwbench {
         sc_sysinfo::print_hwbench(&hwbench);
         if is_authority {
-            warn_if_slow_hardware(&hwbench);
+            warn_if_slow_hardware(&hwbench, validator);
         }
 
         if let Some(ref mut telemetry) = telemetry {
