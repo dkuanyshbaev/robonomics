@@ -65,7 +65,7 @@ use sp_core::{OpaqueMetadata, H256};
 use sp_inherents::{CheckInherentsResult, InherentData};
 use sp_runtime::traits::{
     AccountIdLookup, BlakeTwo256, Block as BlockT, Bounded, ConstBool, ConstU128, ConstU32,
-    ConstU64, ConvertInto, NumberFor,
+    ConstU64, ConvertInto, NumberFor, Verify,
 };
 use sp_runtime::transaction_validity::{TransactionSource, TransactionValidity};
 use sp_runtime::{
@@ -382,12 +382,13 @@ impl pallet_identity::Config for Runtime {
     type SubAccountDeposit = SubAccountDeposit;
     type IdentityInformation = IdentityInfo<MaxAdditionalFields>;
     type OffchainSignature = Signature;
+    type SigningPublicKey = <Signature as Verify>::Signer;
+    type UsernameAuthorityOrigin = EnsureRoot<Self::AccountId>;
 
-    //type SigningPublicKey = /* Type */;
-    //type UsernameAuthorityOrigin = /* Type */;
-    //type PendingUsernameExpiration = /* Type */;
-    //type MaxSuffixLength = /* Type */;
-    //type MaxUsernameLength = /* Type */;
+    // ???
+    type PendingUsernameExpiration = ConstU32<{ 7 * DAYS }>;
+    type MaxSuffixLength = ConstU32<7>;
+    type MaxUsernameLength = ConstU32<32>;
 }
 
 parameter_types! {
@@ -422,6 +423,16 @@ impl pallet_preimage::Config for Runtime {
     type RuntimeEvent = RuntimeEvent;
     type Currency = Balances;
     type ManagerOrigin = EnsureRoot<AccountId>;
+    //type Consideration = HoldConsideration<
+        //AccountId,
+        //Balances,
+        //PreimageHoldReason,
+        //LinearStoragePrice<
+            //dynamic_params::storage::BaseDeposit,
+            //dynamic_params::storage::ByteDeposit,
+            //Balance,
+        //>,
+    //>;
 }
 
 parameter_types! {
@@ -432,6 +443,8 @@ parameter_types! {
     pub const DataDepositPerByte: Balance = 1 * COASE;
     pub const TreasuryPalletId: PalletId = PalletId(*b"py/trsry");
     pub const MaxApprovals: u32 = 100;
+    // ???
+    pub const SpendPayoutPeriod: BlockNumber = 30 * DAYS;
 }
 
 impl pallet_treasury::Config for Runtime {
@@ -446,12 +459,12 @@ impl pallet_treasury::Config for Runtime {
     type WeightInfo = ();
     type MaxApprovals = MaxApprovals;
     type SpendOrigin = frame_support::traits::NeverEnsureOrigin<u128>;
-    // type AssetKind = u32;
-    // type Beneficiary = AccountId;
+    type AssetKind = u32;
+    type Beneficiary = AccountId;
     // type BeneficiaryLookup = Indices;
     // type Paymaster = PayAssetFromAccount<Assets, TreasuryAccount>;
     // type BalanceConverter = AssetRate;
-    // type PayoutPeriod = SpendPayoutPeriod;
+    type PayoutPeriod = SpendPayoutPeriod;
 }
 
 parameter_types! {
