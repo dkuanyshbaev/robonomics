@@ -25,7 +25,7 @@ use sc_consensus_grandpa::{
     GrandpaBlockImport, GrandpaParams, LinkHalf, SharedVoterState, VotingRulesBuilder,
 };
 use sc_executor::{HeapAllocStrategy, WasmExecutor, DEFAULT_HEAP_ALLOC_STRATEGY};
-use sc_network::NetworkService;
+use sc_network::{service::traits::NetworkBackend, NetworkService};
 use sc_service::{config::Configuration, error::Error as ServiceError, TaskManager};
 use sc_transaction_pool_api::OffchainTransactionPoolFactory;
 use sp_api::{CallApiAt, ConstructRuntimeApi};
@@ -284,20 +284,17 @@ where
             .expect("Genesis block exists; qed"),
         &config.chain_spec,
     );
-    // let metrics = Network::register_notification_metrics(
-    //     config.prometheus_config.as_ref().map(|cfg| &cfg.registry),
-    // );
-    // let peer_store_handle = net_config.peer_store_handle();
-    // let (grandpa_protocol_config, grandpa_notification_service) =
-    //     sc_consensus_grandpa::grandpa_peers_set_config(
-    //         grandpa_protocol_name.clone(),
-    //         metrics.clone(),
-    //         Arc::clone(&peer_store_handle),
-    //     );
-    // net_config.add_notification_protocol(grandpa_protocol_config);
-    net_config.add_notification_protocol(sc_consensus_grandpa::grandpa_peers_set_config(
-        grandpa_protocol_name.clone(),
-    ));
+    let metrics = NetworkBackend::register_notification_metrics(
+        config.prometheus_config.as_ref().map(|cfg| &cfg.registry),
+    );
+    let peer_store_handle = net_config.peer_store_handle();
+    let (grandpa_protocol_config, grandpa_notification_service) =
+        sc_consensus_grandpa::grandpa_peers_set_config(
+            grandpa_protocol_name.clone(),
+            metrics.clone(),
+            Arc::clone(&peer_store_handle),
+        );
+    net_config.add_notification_protocol(grandpa_protocol_config);
 
     let warp_sync = Arc::new(sc_consensus_grandpa::warp_proof::NetworkProvider::new(
         backend.clone(),

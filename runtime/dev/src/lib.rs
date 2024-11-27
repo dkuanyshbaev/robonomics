@@ -424,14 +424,14 @@ impl pallet_preimage::Config for Runtime {
     type Currency = Balances;
     type ManagerOrigin = EnsureRoot<AccountId>;
     //type Consideration = HoldConsideration<
-        //AccountId,
-        //Balances,
-        //PreimageHoldReason,
-        //LinearStoragePrice<
-            //dynamic_params::storage::BaseDeposit,
-            //dynamic_params::storage::ByteDeposit,
-            //Balance,
-        //>,
+    //AccountId,
+    //Balances,
+    //PreimageHoldReason,
+    //LinearStoragePrice<
+    //dynamic_params::storage::BaseDeposit,
+    //dynamic_params::storage::ByteDeposit,
+    //Balance,
+    //>,
     //>;
 }
 
