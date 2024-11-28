@@ -248,6 +248,7 @@ pub fn new_service<Runtime>(
         TaskManager,
         Arc<FullClient<Runtime>>,
         Arc<NetworkService<Block, <Block as BlockT>::Hash>>,
+        //Arc<dyn sc_network::service::traits::NetworkService>,
         Arc<sc_transaction_pool::FullPool<Block, FullClient<Runtime>>>,
     ),
     ServiceError,
@@ -328,7 +329,7 @@ where
                 transaction_pool: Some(OffchainTransactionPoolFactory::new(
                     transaction_pool.clone(),
                 )),
-                network_provider: network.clone(),
+                network_provider: Arc::new(network.clone()),
                 enable_http_requests: true,
                 custom_extensions: |_| vec![],
             })
