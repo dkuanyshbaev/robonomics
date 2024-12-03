@@ -363,7 +363,7 @@ parameter_types! {
     pub const BasicDeposit: Balance = 10 * XRT;       // 258 bytes on-chain
     pub const FieldDeposit: Balance = 250 * COASE;    // 66 bytes on-chain
     pub const SubAccountDeposit: Balance = 2 * XRT;   // 53 bytes on-chain
-    //pub const ByteDeposit: Balance = deposit(0, 1);
+    pub const ByteDeposit: Balance = deposit(0, 1);   // ???
     pub const MaxSubAccounts: u32 = 100;
     pub const MaxAdditionalFields: u32 = 100;
     pub const MaxRegistrars: u32 = 20;
@@ -380,7 +380,7 @@ impl pallet_identity::Config for Runtime {
     type RegistrarOrigin = MoreThanHalfTechnicals;
     type WeightInfo = ();
 
-    //type ByteDeposit = ByteDeposit;
+    type ByteDeposit = ByteDeposit;
     type SubAccountDeposit = SubAccountDeposit;
     type IdentityInformation = IdentityInfo<MaxAdditionalFields>;
     type OffchainSignature = Signature;
