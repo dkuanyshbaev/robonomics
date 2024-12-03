@@ -190,6 +190,7 @@ impl frame_system::Config for Runtime {
     type RuntimeTask = RuntimeTask;
     type SingleBlockMigrations = ();
     //type MultiBlockMigrator = pallet_migrations::Pallet<Runtime>;
+    type MultiBlockMigrator = ();
     type PreInherents = ();
     type PostInherents = ();
     type PostTransactions = ();
