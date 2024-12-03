@@ -355,7 +355,8 @@ impl pallet_grandpa::Config for Runtime {
     type KeyOwnerProof = sp_core::Void;
     type EquivocationReportSystem = ();
 
-    //type MaxNominators = ConstU32<0>;
+    // ???
+    type MaxNominators = ConstU32<0>;
 }
 
 parameter_types! {
