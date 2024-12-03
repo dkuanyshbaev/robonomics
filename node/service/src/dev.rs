@@ -241,14 +241,14 @@ where
 }
 
 /// Creates new service from the configuration.
-pub fn new_service<Runtime>(
+pub fn new_service<Runtime, Network: sc_network::NetworkBackend<Block, <Block as BlockT>::Hash>>(
     config: Configuration,
 ) -> Result<
     (
         TaskManager,
         Arc<FullClient<Runtime>>,
-        Arc<NetworkService<Block, <Block as BlockT>::Hash>>,
-        //Arc<dyn sc_network::service::traits::NetworkService>,
+        // Arc<NetworkService<Block, <Block as BlockT>::Hash>>,
+        Arc<dyn sc_network::service::traits::NetworkService>,
         Arc<sc_transaction_pool::FullPool<Block, FullClient<Runtime>>>,
     ),
     ServiceError,
@@ -269,7 +269,7 @@ where
         other: (rpc_builder, block_import, grandpa_link, mut telemetry),
     } = new_partial(&config)?;
 
-    let mut net_config = sc_network::config::FullNetworkConfiguration::new(
+    let mut net_config = sc_network::config::FullNetworkConfiguration::<_, _, Network>::new(
         &config.network,
         config
             .prometheus_config
@@ -285,12 +285,13 @@ where
             .expect("Genesis block exists; qed"),
         &config.chain_spec,
     );
-    let metrics = NetworkBackend::register_notification_metrics(
+    // let metrics = NetworkBackend::register_notification_metrics(
+    let metrics = Network::register_notification_metrics(
         config.prometheus_config.as_ref().map(|cfg| &cfg.registry),
     );
     let peer_store_handle = net_config.peer_store_handle();
     let (grandpa_protocol_config, grandpa_notification_service) =
-        sc_consensus_grandpa::grandpa_peers_set_config(
+        sc_consensus_grandpa::grandpa_peers_set_config::<_, Network>(
             grandpa_protocol_name.clone(),
             metrics.clone(),
             Arc::clone(&peer_store_handle),
