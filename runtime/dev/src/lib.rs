@@ -418,23 +418,31 @@ parameter_types! {
     pub const PreimageMaxSize: u32 = 4096 * 1024;
     pub const PreimageBaseDeposit: Balance = 1 * XRT;
     pub const PreimageByteDeposit: Balance = 10 * GLUSHKOV;
+    pub const PreimageHoldReason: RuntimeHoldReason =
+        RuntimeHoldReason::Preimage(pallet_preimage::HoldReason::Preimage);
 }
 
+// use frame_support::dynamic_params::{dynamic_pallet_params, dynamic_params};
+use frame_support::traits::{fungible::HoldConsideration, LinearStoragePrice};
 impl pallet_preimage::Config for Runtime {
     type WeightInfo = pallet_preimage::weights::SubstrateWeight<Runtime>;
     type RuntimeEvent = RuntimeEvent;
     type Currency = Balances;
     type ManagerOrigin = EnsureRoot<AccountId>;
-    //type Consideration = HoldConsideration<
-    //AccountId,
-    //Balances,
-    //PreimageHoldReason,
-    //LinearStoragePrice<
-    //dynamic_params::storage::BaseDeposit,
-    //dynamic_params::storage::ByteDeposit,
-    //Balance,
-    //>,
-    //>;
+    // ???
+    type Consideration = ();
+    // type Consideration = HoldConsideration<
+    //     AccountId,
+    //     Balances,
+    //     PreimageHoldReason,
+    //     LinearStoragePrice<
+    //         PreimageBaseDeposit,
+    //         PreimageByteDeposit,
+    //         // dynamic_params::storage::BaseDeposit,
+    //         // dynamic_params::storage::ByteDeposit,
+    //         Balance,
+    //     >,
+    // >;
 }
 
 parameter_types! {
@@ -447,8 +455,12 @@ parameter_types! {
     pub const MaxApprovals: u32 = 100;
     // ???
     pub const SpendPayoutPeriod: BlockNumber = 30 * DAYS;
+    pub TreasuryAccount: AccountId = Treasury::account_id();
 }
 
+use frame_support::traits::tokens::PayFromAccount;
+use frame_support::traits::tokens::UnityAssetBalanceConversion;
+use sp_runtime::traits::IdentityLookup;
 impl pallet_treasury::Config for Runtime {
     type PalletId = TreasuryPalletId;
     type Currency = Balances;
@@ -463,9 +475,15 @@ impl pallet_treasury::Config for Runtime {
     type SpendOrigin = frame_support::traits::NeverEnsureOrigin<u128>;
     type AssetKind = u32;
     type Beneficiary = AccountId;
-    // type BeneficiaryLookup = Indices;
+
+    // ???
+    type BeneficiaryLookup = IdentityLookup<Self::AccountId>;
+
     // type Paymaster = PayAssetFromAccount<Assets, TreasuryAccount>;
     // type BalanceConverter = AssetRate;
+    type Paymaster = PayFromAccount<Balances, TreasuryAccount>;
+    type BalanceConverter = UnityAssetBalanceConversion;
+
     type PayoutPeriod = SpendPayoutPeriod;
 }
 
