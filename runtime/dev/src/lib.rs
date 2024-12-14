@@ -445,6 +445,9 @@ impl pallet_preimage::Config for Runtime {
     // >;
 }
 
+use robonomics_primitives::CommunityAccount;
+use sp_runtime::traits::IdentifyAccount;
+
 parameter_types! {
     pub const ProposalBond: Permill = Permill::from_percent(5);
     pub const ProposalBondMinimum: Balance = 10 * XRT;
@@ -455,9 +458,11 @@ parameter_types! {
     pub const MaxApprovals: u32 = 100;
     // ???
     pub const SpendPayoutPeriod: BlockNumber = 30 * DAYS;
-    pub TreasuryAccount: AccountId = Treasury::account_id();
+    // pub TreasuryAccount: AccountId = Treasury::account_id();
+    pub TreasuryAccount: AccountId = CommunityAccount::Treasury.into_account();
 }
 
+use frame_support::traits::tokens::pay::PayAssetFromAccount;
 use frame_support::traits::tokens::PayFromAccount;
 use frame_support::traits::tokens::UnityAssetBalanceConversion;
 use sp_runtime::traits::IdentityLookup;
@@ -479,9 +484,9 @@ impl pallet_treasury::Config for Runtime {
     // ???
     type BeneficiaryLookup = IdentityLookup<Self::AccountId>;
 
-    // type Paymaster = PayAssetFromAccount<Assets, TreasuryAccount>;
+    type Paymaster = PayAssetFromAccount<Assets, TreasuryAccount>;
+    // type Paymaster = PayFromAccount<Balances, TreasuryAccount>;
     // type BalanceConverter = AssetRate;
-    type Paymaster = PayFromAccount<Balances, TreasuryAccount>;
     type BalanceConverter = UnityAssetBalanceConversion;
 
     type PayoutPeriod = SpendPayoutPeriod;
