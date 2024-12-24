@@ -137,6 +137,7 @@ sp-consensus-grandpa = { version = "21.0.0" }
 sp-keystore = { version = "0.40.0" }
 sp-keyring = { version = "39.0.0" }
 sp-timestamp = { version = "34.0.0" }
+sp-genesis-builder = { version = "0.15.1" }
 try-runtime-cli = { version = "0.42.0" }
 
 # Substrate pallets

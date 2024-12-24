@@ -367,7 +367,11 @@ impl CliConfiguration<Self> for RelayChainCli {
             .or_else(|| self.base_path.clone().map(Into::into)))
     }
 
-    fn rpc_addr(&self, default_listen_port: u16) -> Result<Option<std::net::SocketAddr>> {
+    // fn rpc_addr(&self, default_listen_port: u16) -> Result<Option<std::net::SocketAddr>> {
+    fn rpc_addr(
+        &self,
+        default_listen_port: u16,
+    ) -> Result<std::option::Option<Vec<sc_cli::RpcEndpoint>>> {
         self.base.base.rpc_addr(default_listen_port)
     }
 
@@ -386,10 +390,11 @@ impl CliConfiguration<Self> for RelayChainCli {
         _support_url: &String,
         _impl_version: &String,
         _logger_hook: F,
-        _config: &sc_service::Configuration,
+        // _config: &sc_service::Configuration,
     ) -> Result<()>
     where
-        F: FnOnce(&mut sc_cli::LoggerBuilder, &sc_service::Configuration),
+        // F: FnOnce(&mut sc_cli::LoggerBuilder, &sc_service::Configuration),
+        F: FnOnce(&mut sc_cli::LoggerBuilder),
     {
         unreachable!("PolkadotCli is never initialized; qed");
     }
