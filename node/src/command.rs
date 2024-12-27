@@ -168,11 +168,15 @@ pub fn run() -> sc_cli::Result<()> {
                 };
 
                 runner.run_node_until_exit(|config| async move {
-                    let hwbench = (!cli.no_hardware_benchmarks).then_some(
-                        config.database.path().map(|database_path| {
+                    let hwbench = (!cli.no_hardware_benchmarks)
+                        .then_some(config.database.path().map(|database_path| {
                             let _ = std::fs::create_dir_all(database_path);
-                            sc_sysinfo::gather_hwbench(Some(database_path))
-                        })).flatten();
+                            sc_sysinfo::gather_hwbench(
+                                Some(database_path),
+                                &SUBSTRATE_REFERENCE_HARDWARE,
+                            )
+                        }))
+                        .flatten();
 
                     let para_id = chain_spec::Extensions::try_get(&*config.chain_spec)
                         .map(|e| e.para_id)
@@ -189,9 +193,12 @@ pub fn run() -> sc_cli::Result<()> {
                     let parachain_account =
                         AccountIdConversion::<AccountId>::into_account_truncating(&id);
                     let tokio_handle = config.tokio_handle.clone();
-                    let polkadot_config =
-                        SubstrateCli::create_configuration(&polkadot_cli, &polkadot_cli, tokio_handle)
-                        .map_err(|err| format!("Relay chain argument error: {}", err))?;
+                    let polkadot_config = SubstrateCli::create_configuration(
+                        &polkadot_cli,
+                        &polkadot_cli,
+                        tokio_handle,
+                    )
+                    .map_err(|err| format!("Relay chain argument error: {}", err))?;
 
                     info!("Parachain id: {:?}", id);
                     info!("Parachain Account: {}", parachain_account);
@@ -199,24 +206,29 @@ pub fn run() -> sc_cli::Result<()> {
                         info!("Is lighthouse: {}", lighthouse_account);
                     }
 
-                    if !collator_options.relay_chain_rpc_urls.is_empty() && !cli.relaychain_args.is_empty() {
-                        warn!(
-                          "Detected relay chain node arguments together with --relay-chain-rpc-url. \
-                          This command starts a minimal Polkadot node that only uses a \
-                          network-related subset of all relay chain CLI options."
-                        );
-                    }
+                    // if !collator_options.relay_chain_rpc_urls.is_empty() && !cli.relaychain_args.is_empty() {
+                    //     warn!(
+                    //       "Detected relay chain node arguments together with --relay-chain-rpc-url. \
+                    //       This command starts a minimal Polkadot node that only uses a \
+                    //       network-related subset of all relay chain CLI options."
+                    //     );
+                    // }
 
                     match config.chain_spec.family() {
-                        RobonomicsFamily::Mainnet =>
-                            service::parachain::start_generic_robonomics_parachain::<generic_runtime::RuntimeApi>(
+                        RobonomicsFamily::Mainnet => {
+                            service::parachain::start_generic_robonomics_parachain::<
+                                generic_runtime::RuntimeApi,
+                            >(
                                 config,
                                 polkadot_config,
                                 collator_options,
                                 id,
                                 lighthouse_account,
                                 hwbench,
-                            ).await.map_err(sc_cli::Error::Service),
+                            )
+                            .await
+                            .map_err(sc_cli::Error::Service)
+                        }
                         _ => panic!("not implemented"),
                     }
                 })
@@ -271,11 +283,11 @@ pub fn run() -> sc_cli::Result<()> {
                 cmd.run(config, polkadot_config)
             })
         }
-        Some(Subcommand::ExportGenesisState(cmd)) => {
-            construct_async_run!(|components, cli, cmd, config| {
-                Ok(async move { cmd.run(&*config.chain_spec, &*components.client) })
-            })
-        }
+        // Some(Subcommand::ExportGenesisState(cmd)) => {
+        //     construct_async_run!(|components, cli, cmd, config| {
+        //         Ok(async move { cmd.run(&*config.chain_spec, &*components.client) })
+        //     })
+        // }
         Some(Subcommand::ExportGenesisWasm(cmd)) => {
             let runner = cli.create_runner(cmd)?;
             runner.sync_run(|_config| {
