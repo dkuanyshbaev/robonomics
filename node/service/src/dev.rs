@@ -35,6 +35,7 @@ use sp_runtime::{
     OpaqueExtrinsic,
 };
 
+use cumulus_client_service::ParachainHostFunctions;
 use futures::FutureExt;
 use std::sync::Arc;
 
@@ -43,6 +44,8 @@ type HostFunctions = (
     frame_benchmarking::benchmarking::HostFunctions,
 );
 type FullClient<Runtime> = sc_service::TFullClient<Block, Runtime, WasmExecutor<HostFunctions>>;
+// type FullClient<Runtime> =
+//     sc_service::TFullClient<Block, Runtime, WasmExecutor<ParachainHostFunctions>>;
 type FullBackend = sc_service::TFullBackend<Block>;
 type FullSelectChain = sc_consensus::LongestChain<FullBackend, Block>;
 type FullGrandpaBlockImport<Runtime> =
@@ -60,11 +63,13 @@ pub trait RuntimeApiCollection:
     + sp_api::Metadata<Block>
     + sp_offchain::OffchainWorkerApi<Block>
     + sp_session::SessionKeys<Block>
-    + CallApiAt<
-        sp_runtime::generic::Block<sp_runtime::generic::Header<u32, BlakeTwo256>, OpaqueExtrinsic>,
-    >
+//+ CallApiAt<
+//sp_runtime::generic::Block<sp_runtime::generic::Header<u32, BlakeTwo256>, OpaqueExtrinsic>,
+//>
+//where
+//<Self as sp_api::CallApiAt<Block>>::StateBackend: sc_client_api::StateBackend<BlakeTwo256>,
 where
-    <Self as sp_api::CallApiAt<Block>>::StateBackend: sc_client_api::StateBackend<BlakeTwo256>,
+    sc_client_api::StateBackendFor<FullBackend, Block>: sc_client_api::StateBackend<BlakeTwo256>,
 {
 }
 
@@ -79,14 +84,15 @@ where
         + frame_system_rpc_runtime_api::AccountNonceApi<Block, AccountId, Nonce>
         + sp_api::Metadata<Block>
         + sp_offchain::OffchainWorkerApi<Block>
-        + sp_session::SessionKeys<Block>
-        + CallApiAt<
-            sp_runtime::generic::Block<
-                sp_runtime::generic::Header<u32, BlakeTwo256>,
-                OpaqueExtrinsic,
-            >,
-        >,
-    <Self as sp_api::CallApiAt<Block>>::StateBackend: sc_client_api::StateBackend<BlakeTwo256>,
+        + sp_session::SessionKeys<Block>,
+    //+ CallApiAt<
+    //sp_runtime::generic::Block<
+    //sp_runtime::generic::Header<u32, BlakeTwo256>,
+    //OpaqueExtrinsic,
+    //>,
+    //>,
+    //<Self as sp_api::CallApiAt<Block>>::StateBackend: sc_client_api::StateBackend<BlakeTwo256>,
+    sc_client_api::StateBackendFor<FullBackend, Block>: sc_client_api::StateBackend<BlakeTwo256>,
 {
 }
 
@@ -118,8 +124,9 @@ pub fn new_partial<Runtime>(
 >
 where
     Runtime: ConstructRuntimeApi<Block, FullClient<Runtime>> + Send + Sync + 'static,
-    Runtime::RuntimeApi:
-        RuntimeApiCollection<StateBackend = sc_client_api::StateBackendFor<FullBackend, Block>>,
+    Runtime::RuntimeApi: RuntimeApiCollection,
+    // Runtime::RuntimeApi:
+    //     RuntimeApiCollection<StateBackend = sc_client_api::StateBackendFor<FullBackend, Block>>,
 {
     let telemetry = config
         .telemetry_endpoints
@@ -241,23 +248,23 @@ where
 }
 
 /// Creates new service from the configuration.
-// pub fn new_service<Runtime, Network: sc_network::NetworkBackend<Block, <Block as BlockT>::Hash>>(
 pub fn new_service<Runtime>(
     config: Configuration,
 ) -> Result<
     (
         TaskManager,
         Arc<FullClient<Runtime>>,
-        // Arc<NetworkService<Block, <Block as BlockT>::Hash>>,
-        Arc<dyn sc_network::service::traits::NetworkService>,
+        //Arc<NetworkService<Block, <Block as BlockT>::Hash>>,
+        Box<dyn sc_network::service::traits::NetworkService>,
         Arc<sc_transaction_pool::FullPool<Block, FullClient<Runtime>>>,
     ),
     ServiceError,
 >
 where
     Runtime: ConstructRuntimeApi<Block, FullClient<Runtime>> + Send + Sync + 'static,
-    Runtime::RuntimeApi:
-        RuntimeApiCollection<StateBackend = sc_client_api::StateBackendFor<FullBackend, Block>>,
+    Runtime::RuntimeApi: RuntimeApiCollection,
+    // Runtime::RuntimeApi:
+    //     RuntimeApiCollection<StateBackend = sc_client_api::StateBackendFor<FullBackend, Block>>,
 {
     let sc_service::PartialComponents {
         client,
@@ -475,5 +482,5 @@ where
     }
 
     network_starter.start_network();
-    Ok((task_manager, client, network, transaction_pool))
+    Ok((task_manager, client, Box::new(network), transaction_pool))
 }

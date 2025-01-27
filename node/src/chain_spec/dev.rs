@@ -157,7 +157,7 @@ pub fn config() -> ChainSpec {
         // ),
         Extensions {
             // ???
-            relay_chain: "rococo-local".into(),
+            relay_chain: "kusama".into(),
             // You MUST set this to the correct network!
             // ???
             para_id: 1000,

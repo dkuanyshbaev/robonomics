@@ -283,11 +283,12 @@ pub fn run() -> sc_cli::Result<()> {
                 cmd.run(config, polkadot_config)
             })
         }
-        // Some(Subcommand::ExportGenesisState(cmd)) => {
-        //     construct_async_run!(|components, cli, cmd, config| {
-        //         Ok(async move { cmd.run(&*config.chain_spec, &*components.client) })
-        //     })
-        // }
+        Some(Subcommand::ExportGenesisState(cmd)) => {
+            // construct_async_run!(|components, cli, cmd, config| {
+            //     Ok(async move { cmd.run(&*config.chain_spec, &*components.client) })
+            // })
+            Ok(())
+        }
         Some(Subcommand::ExportGenesisWasm(cmd)) => {
             let runner = cli.create_runner(cmd)?;
             runner.sync_run(|_config| {
