@@ -9729,6 +9729,7 @@ dependencies = [
  "clap",
  "color-print",
  "cumulus-client-cli",
+ "cumulus-client-service",
  "cumulus-primitives-core",
  "dev-runtime",
  "frame-benchmarking-cli",

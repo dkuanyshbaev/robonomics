@@ -24,6 +24,7 @@ use crate::{
 use robonomics_primitives::{AccountId, Block, CommunityAccount};
 use robonomics_service as service;
 
+use cumulus_client_service::storage_proof_size::HostFunctions as ReclaimHostFunctions;
 use cumulus_primitives_core::ParaId;
 use frame_benchmarking_cli::{BenchmarkCmd, SUBSTRATE_REFERENCE_HARDWARE};
 use log::{info, warn};
@@ -302,7 +303,8 @@ pub fn run() -> sc_cli::Result<()> {
             match cmd {
                 BenchmarkCmd::Pallet(cmd) => {
                     if cfg!(feature = "runtime-benchmarks") {
-                        runner.sync_run(|config| cmd.run::<Block, ()>(config))
+                        // runner.sync_run(|config| cmd.run::<Block, ()>(config))
+                        runner.sync_run(|config| cmd.run_with_spec::<sp_runtime::traits::HashingFor<Block>, ReclaimHostFunctions>(Some(config.chain_spec)))
                     } else {
                         Err("Benchmarking wasn't enabled when building the node. \
                 You can enable it with `--features runtime-benchmarks`."
