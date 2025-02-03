@@ -35,7 +35,6 @@ use sp_runtime::{
     OpaqueExtrinsic,
 };
 
-use cumulus_client_service::ParachainHostFunctions;
 use futures::FutureExt;
 use std::sync::Arc;
 
@@ -44,8 +43,6 @@ type HostFunctions = (
     frame_benchmarking::benchmarking::HostFunctions,
 );
 type FullClient<Runtime> = sc_service::TFullClient<Block, Runtime, WasmExecutor<HostFunctions>>;
-// type FullClient<Runtime> =
-//     sc_service::TFullClient<Block, Runtime, WasmExecutor<ParachainHostFunctions>>;
 type FullBackend = sc_service::TFullBackend<Block>;
 type FullSelectChain = sc_consensus::LongestChain<FullBackend, Block>;
 type FullGrandpaBlockImport<Runtime> =
@@ -63,11 +60,6 @@ pub trait RuntimeApiCollection:
     + sp_api::Metadata<Block>
     + sp_offchain::OffchainWorkerApi<Block>
     + sp_session::SessionKeys<Block>
-//+ CallApiAt<
-//sp_runtime::generic::Block<sp_runtime::generic::Header<u32, BlakeTwo256>, OpaqueExtrinsic>,
-//>
-//where
-//<Self as sp_api::CallApiAt<Block>>::StateBackend: sc_client_api::StateBackend<BlakeTwo256>,
 where
     sc_client_api::StateBackendFor<FullBackend, Block>: sc_client_api::StateBackend<BlakeTwo256>,
 {
@@ -85,13 +77,6 @@ where
         + sp_api::Metadata<Block>
         + sp_offchain::OffchainWorkerApi<Block>
         + sp_session::SessionKeys<Block>,
-    //+ CallApiAt<
-    //sp_runtime::generic::Block<
-    //sp_runtime::generic::Header<u32, BlakeTwo256>,
-    //OpaqueExtrinsic,
-    //>,
-    //>,
-    //<Self as sp_api::CallApiAt<Block>>::StateBackend: sc_client_api::StateBackend<BlakeTwo256>,
     sc_client_api::StateBackendFor<FullBackend, Block>: sc_client_api::StateBackend<BlakeTwo256>,
 {
 }
@@ -125,8 +110,6 @@ pub fn new_partial<Runtime>(
 where
     Runtime: ConstructRuntimeApi<Block, FullClient<Runtime>> + Send + Sync + 'static,
     Runtime::RuntimeApi: RuntimeApiCollection,
-    // Runtime::RuntimeApi:
-    //     RuntimeApiCollection<StateBackend = sc_client_api::StateBackendFor<FullBackend, Block>>,
 {
     let telemetry = config
         .telemetry_endpoints
@@ -254,7 +237,6 @@ pub fn new_service<Runtime>(
     (
         TaskManager,
         Arc<FullClient<Runtime>>,
-        //Arc<NetworkService<Block, <Block as BlockT>::Hash>>,
         Box<dyn sc_network::service::traits::NetworkService>,
         Arc<sc_transaction_pool::FullPool<Block, FullClient<Runtime>>>,
     ),
@@ -263,8 +245,6 @@ pub fn new_service<Runtime>(
 where
     Runtime: ConstructRuntimeApi<Block, FullClient<Runtime>> + Send + Sync + 'static,
     Runtime::RuntimeApi: RuntimeApiCollection,
-    // Runtime::RuntimeApi:
-    //     RuntimeApiCollection<StateBackend = sc_client_api::StateBackendFor<FullBackend, Block>>,
 {
     let sc_service::PartialComponents {
         client,
@@ -290,14 +270,6 @@ where
             .map(|cfg| cfg.registry.clone()),
     );
 
-    // let mut net_config = sc_network::config::FullNetworkConfiguration::<_, _, Network>::new(
-    //     &config.network,
-    //     config
-    //         .prometheus_config
-    //         .as_ref()
-    //         .map(|cfg| cfg.registry.clone()),
-    // );
-
     let grandpa_protocol_name = sc_consensus_grandpa::protocol_standard_name(
         &client
             .block_hash(0)
@@ -306,15 +278,12 @@ where
             .expect("Genesis block exists; qed"),
         &config.chain_spec,
     );
-    // let metrics = NetworkBackend::register_notification_metrics(
     let metrics = sc_network::NetworkWorker::<Block, Hash>::register_notification_metrics(
-        // let metrics = Network::register_notification_metrics(
         config.prometheus_config.as_ref().map(|cfg| &cfg.registry),
     );
     let peer_store_handle = net_config.peer_store_handle();
     let (grandpa_protocol_config, grandpa_notification_service) =
         sc_consensus_grandpa::grandpa_peers_set_config::<_, sc_network::NetworkWorker<Block, Hash>>(
-            // sc_consensus_grandpa::grandpa_peers_set_config::<_, Network>(
             grandpa_protocol_name.clone(),
             metrics.clone(),
             Arc::clone(&peer_store_handle),

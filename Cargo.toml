@@ -80,7 +80,6 @@ color-print = "0.3.4"
 futures = { version = "0.3.21", features = ["thread-pool"] }
 hex-literal = "0.3.4"
 serde = { version = "1.0.171", features = ["derive"] }
-# jsonrpsee = { version = "0.16.2", features = ["server"] }
 jsonrpsee = { version = "0.24.7", features = ["server"] }
 thiserror = "1.0.43"
 async-trait = "0.1.71"
@@ -202,11 +201,8 @@ polkadot-cli = { version = "19.0.0" }
 polkadot-parachain = { version = "1.0.0" }
 polkadot-runtime-parachains = { version = "17.0.0", default-features = false }
 polkadot-primitives = { version = "16.0.0", default-features = false }
-# xcm = { git = "https://github.com/paritytech/polkadot", branch = "release-v1.0.0", default-features = false }
 staging-xcm = { version = "14.2.0" }
-# xcm-builder = { git = "https://github.com/paritytech/polkadot", branch = "release-v1.0.0", default-features = false }
 staging-xcm-builder = { version = "17.0.0" }
-# xcm-executor = { git = "https://github.com/paritytech/polkadot", branch = "release-v1.0.0", default-features = false }
 staging-xcm-executor = { version = "17.0.0" }
 
 # Build deps
