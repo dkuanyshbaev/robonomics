@@ -207,14 +207,6 @@ pub fn run() -> sc_cli::Result<()> {
                         info!("Is lighthouse: {}", lighthouse_account);
                     }
 
-                    // if !collator_options.relay_chain_rpc_urls.is_empty() && !cli.relaychain_args.is_empty() {
-                    //     warn!(
-                    //       "Detected relay chain node arguments together with --relay-chain-rpc-url. \
-                    //       This command starts a minimal Polkadot node that only uses a \
-                    //       network-related subset of all relay chain CLI options."
-                    //     );
-                    // }
-
                     match config.chain_spec.family() {
                         RobonomicsFamily::Mainnet => {
                             service::parachain::start_generic_robonomics_parachain::<
@@ -382,7 +374,6 @@ impl CliConfiguration<Self> for RelayChainCli {
             .or_else(|| self.base_path.clone().map(Into::into)))
     }
 
-    // fn rpc_addr(&self, default_listen_port: u16) -> Result<Option<std::net::SocketAddr>> {
     fn rpc_addr(
         &self,
         default_listen_port: u16,
@@ -400,15 +391,8 @@ impl CliConfiguration<Self> for RelayChainCli {
             .prometheus_config(default_listen_port, chain_spec)
     }
 
-    fn init<F>(
-        &self,
-        _support_url: &String,
-        _impl_version: &String,
-        _logger_hook: F,
-        // _config: &sc_service::Configuration,
-    ) -> Result<()>
+    fn init<F>(&self, _support_url: &String, _impl_version: &String, _logger_hook: F) -> Result<()>
     where
-        // F: FnOnce(&mut sc_cli::LoggerBuilder, &sc_service::Configuration),
         F: FnOnce(&mut sc_cli::LoggerBuilder),
     {
         unreachable!("PolkadotCli is never initialized; qed");

@@ -19,7 +19,6 @@
 
 /// Robonomics Mainnet Chain Specification.
 pub type ChainSpec = sc_service::GenericChainSpec<super::Extensions>;
-// sc_service::GenericChainSpec<dev_runtime::RuntimeGenesisConfig, super::Extensions>;
 
 /// Robonomics parachain on Kusama.
 pub fn kusama_config() -> ChainSpec {
