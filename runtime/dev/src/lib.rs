@@ -601,21 +601,27 @@ parameter_types! {
     pub const AuctionDuration: BlockNumber = 10;
     pub const AuctionCost: Balance = 200 * XRT;
     pub const MinimalBid: Balance = 1 * XRT;
+    // ???
+    pub const MaxDevicesLen: u64 = 100;
+    pub const MaxAucionIndexLen: u64 = 100;
 }
 
-// impl pallet_robonomics_rws::Config for Runtime {
-//     type Call = RuntimeCall;
-//     type Time = Timestamp;
-//     type Moment = Moment;
-//     type AuctionIndex = u32;
-//     type AuctionCurrency = Balances;
-//     type RuntimeEvent = RuntimeEvent;
-//     type ReferenceCallWeight = ReferenceCallWeight;
-//     type AuctionDuration = AuctionDuration;
-//     type AuctionCost = AuctionCost;
-//     type MinimalBid = MinimalBid;
-// }
-//
+impl pallet_robonomics_rws::Config for Runtime {
+    type Call = RuntimeCall;
+    type Time = Timestamp;
+    type Moment = Moment;
+    type AuctionIndex = u32;
+    type AuctionCurrency = Balances;
+    type RuntimeEvent = RuntimeEvent;
+    type ReferenceCallWeight = ReferenceCallWeight;
+    type AuctionDuration = AuctionDuration;
+    type AuctionCost = AuctionCost;
+    type MinimalBid = MinimalBid;
+    // ???
+    type MaxDevicesLen = u64;
+    type MaxAucionIndexLen = u64;
+}
+
 // impl pallet_robonomics_digital_twin::Config for Runtime {
 //     type RuntimeEvent = RuntimeEvent;
 // }
@@ -664,7 +670,7 @@ construct_runtime!(
         // Robonomics Network modules.
         Datalog: pallet_robonomics_datalog,
         Launch: pallet_robonomics_launch,
-        // RWS: pallet_robonomics_rws,
+        RWS: pallet_robonomics_rws,
         // DigitalTwin: pallet_robonomics_digital_twin,
         Liability: pallet_robonomics_liability,
 
