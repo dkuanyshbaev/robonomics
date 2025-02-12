@@ -343,11 +343,11 @@ pub mod pallet {
         #[pallet::weight(100_000)]
         pub fn set_devices(
             origin: OriginFor<T>,
-            devices: Vec<T::AccountId>,
+            devices: BoundedVec<T::AccountId, T::MaxDevicesAmount>,
         ) -> DispatchResultWithPostInfo {
             let sender = ensure_signed(origin)?;
             <Devices<T>>::insert(sender.clone(), devices.clone());
-            Self::deposit_event(Event::NewDevices(sender, devices));
+            Self::deposit_event(Event::NewDevices(sender, devices.to_vec()));
             Ok(().into())
         }
 
@@ -451,7 +451,8 @@ pub mod pallet {
                 .partition(|(_, auction)| auction.winner.is_some());
 
             // store auction indexes without bids to queue
-            <AuctionQueue<T>>::put(next.iter().map(|(i, _)| i).collect::<Vec<_>>());
+            //<AuctionQueue<T>>::put(next.iter().map(|(i, _)| i).collect::<Vec<_>>());
+            <AuctionQueue<T>>::put(next.iter().map(|(i, _)| i).collect::<BoundedVec<_, _>>());
 
             for (_, auction) in finished.iter() {
                 if let Some(subscription_id) = &auction.winner {
