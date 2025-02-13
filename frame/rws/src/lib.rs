@@ -127,6 +127,7 @@ pub mod pallet {
     >>::Balance;
 
     const DAYS_TO_MS: u32 = 24 * 60 * 60 * 1000;
+    const STORAGE_VERSION: StorageVersion = StorageVersion::new(1);
 
     #[pallet::config]
     pub trait Config: frame_system::Config {
@@ -242,6 +243,7 @@ pub mod pallet {
     pub(super) type UnspendBondValue<T: Config> = StorageValue<_, BalanceOf<T>, ValueQuery>;
 
     #[pallet::pallet]
+    #[pallet::storage_version(STORAGE_VERSION)]
     pub struct Pallet<T>(PhantomData<T>);
 
     #[pallet::hooks]
@@ -452,12 +454,11 @@ pub mod pallet {
 
             // store auction indexes without bids to queue
             //<AuctionQueue<T>>::put(next.iter().map(|(i, _)| i).collect::<Vec<_>>());
-
-            let indexes_without_bids = BoundedVec::new();
-            next.iter().map(|(i, _)| indexes_without_bids.try_push(i)); 
-            <AuctionQueue<T>>::put(&indexes_without_bids);
-
-            //----------------------------------------------------
+            let mut indexes_without_bids = BoundedVec::new();
+            next.iter()
+                .map(|(i, _)| indexes_without_bids.try_push(i.clone()));
+            <AuctionQueue<T>>::put(indexes_without_bids);
+            //------------------------------------------------
 
             for (_, auction) in finished.iter() {
                 if let Some(subscription_id) = &auction.winner {

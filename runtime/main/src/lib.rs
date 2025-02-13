@@ -596,22 +596,22 @@ parameter_types! {
     pub const MinimalBid: Balance = 1 * XRT;
 }
 
-// impl pallet_robonomics_rws::Config for Runtime {
-//     type Call = RuntimeCall;
-//     type Time = Timestamp;
-//     type Moment = Moment;
-//     type AuctionIndex = u32;
-//     type AuctionCurrency = Balances;
-//     type RuntimeEvent = RuntimeEvent;
-//     type ReferenceCallWeight = ReferenceCallWeight;
-//     type AuctionDuration = AuctionDuration;
-//     type AuctionCost = AuctionCost;
-//     type MinimalBid = MinimalBid;
-// }
-//
-// impl pallet_robonomics_digital_twin::Config for Runtime {
-//     type RuntimeEvent = RuntimeEvent;
-// }
+impl pallet_robonomics_rws::Config for Runtime {
+    type Call = RuntimeCall;
+    type Time = Timestamp;
+    type Moment = Moment;
+    type AuctionIndex = u32;
+    type AuctionCurrency = Balances;
+    type RuntimeEvent = RuntimeEvent;
+    type ReferenceCallWeight = ReferenceCallWeight;
+    type AuctionDuration = AuctionDuration;
+    type AuctionCost = AuctionCost;
+    type MinimalBid = MinimalBid;
+}
+
+//impl pallet_robonomics_digital_twin::Config for Runtime {
+//type RuntimeEvent = RuntimeEvent;
+//}
 
 impl pallet_robonomics_liability::Config for Runtime {
     type Agreement = pallet_robonomics_liability::SignedAgreement<
@@ -659,8 +659,8 @@ construct_runtime! {
         // Robonomics Network pallets.
         Datalog: pallet_robonomics_datalog = 51,
         Launch: pallet_robonomics_launch = 52,
-        // DigitalTwin: pallet_robonomics_digital_twin = 54,
-        // RWS: pallet_robonomics_rws = 55,
+        //DigitalTwin: pallet_robonomics_digital_twin = 54,
+        RWS: pallet_robonomics_rws = 55,
         Liability: pallet_robonomics_liability = 56,
 
         // Block authoring gadget.
