@@ -431,7 +431,7 @@ pub mod pallet {
             <Auction<T>>::insert(&index, AuctionLedger::new(kind.clone()));
 
             // insert auction into queue
-            <AuctionQueue<T>>::mutate(|queue| queue.push(index.clone()));
+            <AuctionQueue<T>>::mutate(|queue| queue.try_push(index.clone()));
 
             // deposit descriptive event
             Self::deposit_event(Event::NewAuction(kind, index));
@@ -452,7 +452,12 @@ pub mod pallet {
 
             // store auction indexes without bids to queue
             //<AuctionQueue<T>>::put(next.iter().map(|(i, _)| i).collect::<Vec<_>>());
-            <AuctionQueue<T>>::put(next.iter().map(|(i, _)| i).collect::<BoundedVec<_, _>>());
+
+            let indexes_without_bids = BoundedVec::new();
+            next.iter().map(|(i, _)| indexes_without_bids.try_push(i)); 
+            <AuctionQueue<T>>::put(&indexes_without_bids);
+
+            //----------------------------------------------------
 
             for (_, auction) in finished.iter() {
                 if let Some(subscription_id) = &auction.winner {
