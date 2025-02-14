@@ -602,8 +602,8 @@ parameter_types! {
     pub const AuctionCost: Balance = 200 * XRT;
     pub const MinimalBid: Balance = 1 * XRT;
     // ???
-    pub const MaxDevicesLen: u64 = 100;
-    pub const MaxAucionIndexLen: u64 = 100;
+    pub const MaxDevicesAmount: u32 = 100;
+    pub const MaxAuctionIndexesAmount: u32 = 100;
 }
 
 impl pallet_robonomics_rws::Config for Runtime {
@@ -618,13 +618,13 @@ impl pallet_robonomics_rws::Config for Runtime {
     type AuctionCost = AuctionCost;
     type MinimalBid = MinimalBid;
     // ???
-    type MaxDevicesLen = u64;
-    type MaxAucionIndexLen = u64;
+    type MaxDevicesAmount = MaxDevicesAmount;
+    type MaxAuctionIndexesAmount = MaxAuctionIndexesAmount;
 }
 
-//impl pallet_robonomics_digital_twin::Config for Runtime {
-//type RuntimeEvent = RuntimeEvent;
-//}
+impl pallet_robonomics_digital_twin::Config for Runtime {
+    type RuntimeEvent = RuntimeEvent;
+}
 
 impl pallet_robonomics_liability::Config for Runtime {
     type Agreement = pallet_robonomics_liability::SignedAgreement<
@@ -671,7 +671,7 @@ construct_runtime!(
         Datalog: pallet_robonomics_datalog,
         Launch: pallet_robonomics_launch,
         RWS: pallet_robonomics_rws,
-        //DigitalTwin: pallet_robonomics_digital_twin,
+        DigitalTwin: pallet_robonomics_digital_twin,
         Liability: pallet_robonomics_liability,
 
         // Sudo. Usable initially.
