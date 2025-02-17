@@ -28,10 +28,9 @@ use sc_chain_spec::ChainType;
 use sp_core::sr25519;
 use sp_runtime::traits::IdentifyAccount;
 
-// /// DevNet Chain Specification.
+/// DevNet Chain Specification.
 // pub type ChainSpec = sc_service::GenericChainSpec<RuntimeGenesisConfig, Extensions>;
 pub type ChainSpec = sc_service::GenericChainSpec<Extensions>;
-// pub type ChainSpec = sc_service::GenericChainSpec<RuntimeGenesisConfig>;
 
 fn get_authority_keys_from_seed(seed: &str) -> (AuraId, GrandpaId) {
     (
@@ -44,7 +43,7 @@ fn devnet_genesis(
     initial_authorities: Vec<(AuraId, GrandpaId)>,
     balances: Vec<(AccountId, Balance)>,
     sudo_key: AccountId,
-    code: Vec<u8>,
+    _code: Vec<u8>,
 ) -> RuntimeGenesisConfig {
     RuntimeGenesisConfig {
         system: SystemConfig {

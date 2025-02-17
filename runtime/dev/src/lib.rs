@@ -404,7 +404,7 @@ parameter_types! {
 }
 
 // use frame_support::dynamic_params::{dynamic_pallet_params, dynamic_params};
-use frame_support::traits::{fungible::HoldConsideration, LinearStoragePrice};
+// use frame_support::traits::{fungible::HoldConsideration, LinearStoragePrice};
 impl pallet_preimage::Config for Runtime {
     type WeightInfo = pallet_preimage::weights::SubstrateWeight<Runtime>;
     type RuntimeEvent = RuntimeEvent;
@@ -443,7 +443,6 @@ parameter_types! {
 }
 
 use frame_support::traits::tokens::pay::PayAssetFromAccount;
-use frame_support::traits::tokens::PayFromAccount;
 use frame_support::traits::tokens::UnityAssetBalanceConversion;
 use sp_runtime::traits::IdentityLookup;
 impl pallet_treasury::Config for Runtime {
