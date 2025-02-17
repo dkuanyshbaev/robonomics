@@ -196,12 +196,10 @@ where
         let client = client.clone();
         let pool = transaction_pool.clone();
 
-        // move |deny_unsafe, _| {
         move |_| {
             let deps = robonomics_rpc_core::CoreDeps {
                 client: client.clone(),
                 pool: pool.clone(),
-                // deny_unsafe,
                 // TODO: enable RPC extensions for dev node
                 ext_rpc: jsonrpsee::RpcModule::new(()),
             };

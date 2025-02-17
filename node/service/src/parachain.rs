@@ -385,13 +385,11 @@ where
         let client = client.clone();
         let transaction_pool = transaction_pool.clone();
 
-        // Box::new(move |deny_unsafe, _| {
         Box::new(move |_| {
             let deps = robonomics_rpc_core::CoreDeps {
                 client: client.clone(),
                 pool: transaction_pool.clone(),
                 ext_rpc: rpc_ext_builder(client.clone())?,
-                // deny_unsafe,
             };
 
             robonomics_rpc_core::create_core_rpc(deps).map_err(Into::into)
