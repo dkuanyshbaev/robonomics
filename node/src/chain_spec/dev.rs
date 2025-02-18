@@ -27,9 +27,9 @@ use robonomics_primitives::{AccountId, Balance, CommunityAccount};
 use sc_chain_spec::ChainType;
 use sp_core::sr25519;
 use sp_runtime::traits::IdentifyAccount;
+use serde_json::json;
 
 /// DevNet Chain Specification.
-// pub type ChainSpec = sc_service::GenericChainSpec<RuntimeGenesisConfig, Extensions>;
 pub type ChainSpec = sc_service::GenericChainSpec<Extensions>;
 
 fn get_authority_keys_from_seed(seed: &str) -> (AuraId, GrandpaId) {
@@ -113,7 +113,7 @@ pub fn genesis(
     )
 }
 
-// /// Create DevNet Chain Specification (single validator Alice)
+/// Create DevNet Chain Specification (single validator Alice)
 // pub fn config() -> ChainSpec {
 //     let mk_genesis = || {
 //         genesis(
@@ -149,23 +149,22 @@ pub fn config() -> ChainSpec {
 
     ChainSpec::builder(
         wasm_binary_unwrap(),
-        // genesis(
-        //     vec![get_authority_keys_from_seed("Alice")],
-        //     None,
-        //     get_account_id_from_seed::<sr25519::Public>("Alice"),
-        // ),
         Extensions {
-            // ???
             relay_chain: "kusama".into(),
-            // You MUST set this to the correct network!
-            // ???
-            para_id: 1000,
+            para_id: 3388,
         },
     )
     .with_name("Development")
     .with_id("dev")
     .with_chain_type(ChainType::Development)
     .with_genesis_config_preset_name(sp_genesis_builder::DEV_RUNTIME_PRESET)
-    // .with_extensions()
+    .with_genesis_config_patch(json!({
+        "babe": {
+            "authorities": [
+                // get_authority_keys_from_seed("Alice"),
+                get_account_id_from_seed::<sr25519::Public>("Alice"),
+            ],
+        }
+    }))
     .build()
 }
