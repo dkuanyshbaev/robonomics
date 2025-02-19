@@ -25,9 +25,9 @@ use dev_runtime::{
 use robonomics_primitives::{AccountId, Balance, CommunityAccount};
 
 use sc_chain_spec::ChainType;
+use serde_json::json;
 use sp_core::sr25519;
 use sp_runtime::traits::IdentifyAccount;
-use serde_json::json;
 
 /// DevNet Chain Specification.
 pub type ChainSpec = sc_service::GenericChainSpec<Extensions>;
@@ -113,7 +113,7 @@ pub fn genesis(
     )
 }
 
-/// Create DevNet Chain Specification (single validator Alice)
+// /// Create DevNet Chain Specification (single validator Alice)
 // pub fn config() -> ChainSpec {
 //     let mk_genesis = || {
 //         genesis(
@@ -122,24 +122,21 @@ pub fn genesis(
 //             get_account_id_from_seed::<sr25519::Public>("Alice"),
 //         )
 //     };
-//
 //     let mut properties = sc_chain_spec::Properties::new();
 //     properties.insert("tokenSymbol".into(), "XRT".into());
 //     properties.insert("tokenDecimals".into(), 9.into());
-//
-//     // ChainSpec::from_genesis(
-//     //     "Development",
-//     //     "dev",
-//     //     ChainType::Development,
-//     //     mk_genesis,
-//     //     vec![],
-//     //     None,
-//     //     None,
-//     //     None,
-//     //     Some(properties),
-//     //     Default::default(),
-//     // )
-//
+//     ChainSpec::from_genesis(
+//         "Development",
+//         "dev",
+//         ChainType::Development,
+//         mk_genesis,
+//         vec![],
+//         None,
+//         None,
+//         None,
+//         Some(properties),
+//         Default::default(),
+//     )
 // }
 
 pub fn config() -> ChainSpec {
@@ -147,24 +144,49 @@ pub fn config() -> ChainSpec {
     properties.insert("tokenSymbol".into(), "XRT".into());
     properties.insert("tokenDecimals".into(), 9.into());
 
-    ChainSpec::builder(
-        wasm_binary_unwrap(),
-        Extensions {
-            relay_chain: "kusama".into(),
-            para_id: 3388,
-        },
-    )
-    .with_name("Development")
-    .with_id("dev")
-    .with_chain_type(ChainType::Development)
-    .with_genesis_config_preset_name(sp_genesis_builder::DEV_RUNTIME_PRESET)
-    .with_genesis_config_patch(json!({
-        "babe": {
-            "authorities": [
-                // get_authority_keys_from_seed("Alice"),
-                get_account_id_from_seed::<sr25519::Public>("Alice"),
-            ],
-        }
-    }))
-    .build()
+    ChainSpec::builder(wasm_binary_unwrap(), Default::default())
+        .with_name("Development")
+        .with_id("dev")
+        .with_chain_type(ChainType::Development)
+        .with_genesis_config_preset_name(sp_genesis_builder::DEV_RUNTIME_PRESET)
+        .with_genesis_config_patch(json!({
+            "aura": {
+                "authorities": [
+                    get_account_id_from_seed::<sr25519::Public>("Alice"),
+                ],
+            },
+            "grandpa": {
+                "authorities": [
+                    get_account_id_from_seed::<sr25519::Public>("Alice"),
+                ],
+            },
+            "sudo": {
+                "key": vec![get_authority_keys_from_seed("Alice")],
+            }
+        }))
+        .with_properties(properties)
+        .build()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_spec() {
+        let mut properties = sc_chain_spec::Properties::new();
+        properties.insert("tokenSymbol".into(), "XRT".into());
+        properties.insert("tokenDecimals".into(), 9.into());
+
+        let spec = ChainSpec::builder(wasm_binary_unwrap(), Default::default())
+            .with_name("Development")
+            .with_id("dev")
+            .with_chain_type(ChainType::Development)
+            .with_genesis_config_preset_name(sp_genesis_builder::DEV_RUNTIME_PRESET)
+            .with_properties(properties)
+            .build();
+
+        let raw_chain_spec = spec.as_json(true);
+        assert!(raw_chain_spec.is_ok());
+    }
 }
