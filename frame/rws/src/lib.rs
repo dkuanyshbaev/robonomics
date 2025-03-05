@@ -23,12 +23,17 @@
 use frame_support::pallet_prelude::Weight;
 use parity_scale_codec::{Decode, Encode, HasCompact};
 use scale_info::TypeInfo;
-use sp_runtime::RuntimeDebug;
+use sp_runtime::{
+    traits::{IdentifyAccount, Verify},
+    MultiSignature, RuntimeDebug,
+};
 
 //#[cfg(test)]
 //mod tests;
 
 pub use pallet::*;
+
+pub type AccountId = <<MultiSignature as Verify>::Signer as IdentifyAccount>::AccountId;
 
 #[derive(PartialEq, Eq, Clone, Encode, Decode, TypeInfo, RuntimeDebug)]
 pub enum Subscription {
@@ -43,6 +48,14 @@ pub enum Subscription {
         /// How long days this subscription active.
         #[codec(compact)]
         days: u32,
+    },
+    /// ???
+    Auto {
+        /// How much Transactions Per Second this subscription gives (in uTPS).
+        #[codec(compact)]
+        tps: u32,
+        /// ???
+        account: AccountId,
     },
 }
 
@@ -482,6 +495,7 @@ pub mod pallet {
                         0u32
                     }
                 }
+                Subscription::Auto { tps, .. } => tps,
             };
 
             let delta: u64 = (now.clone() - subscription.last_update).into();

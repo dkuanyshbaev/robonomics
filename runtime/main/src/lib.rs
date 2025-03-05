@@ -594,6 +594,7 @@ parameter_types! {
     pub const AuctionDuration: BlockNumber = 10;
     pub const AuctionCost: Balance = 25000 * XRT;  // start subscription auction when amount locked
     pub const MinimalBid: Balance = 1 * XRT;
+    // pub const MinimalBid: Balance = 0.99 * XRT;
 }
 
 impl pallet_robonomics_rws::Config for Runtime {
