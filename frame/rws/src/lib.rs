@@ -55,7 +55,7 @@ pub enum Subscription {
         #[codec(compact)]
         tps: u32,
         /// ???
-        account: AccountId,
+        address: Option<AccountId>,
     },
 }
 
@@ -464,6 +464,14 @@ pub mod pallet {
                     let (slash, _) =
                         T::AuctionCurrency::slash_reserved(&subscription_id, auction.best_price);
                     T::AuctionCurrency::burn(slash.peek());
+
+                    // ???
+                    if let Subscription::Auto { ref address, .. } = auction.kind {
+                        if let Some(a) = address {
+                            subscription_id = a;
+                        };
+                    };
+
                     // register subscription
                     <Ledger<T>>::insert(
                         subscription_id,
