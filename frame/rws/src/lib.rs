@@ -33,10 +33,10 @@ use sp_runtime::{
 
 pub use pallet::*;
 
-pub type AccountId = <<MultiSignature as Verify>::Signer as IdentifyAccount>::AccountId;
+// pub type AccountId = <<MultiSignature as Verify>::Signer as IdentifyAccount>::AccountId;
 
 #[derive(PartialEq, Eq, Clone, Encode, Decode, TypeInfo, RuntimeDebug)]
-pub enum Subscription {
+pub enum Subscription<T: frame_system::Config> {
     /// Lifetime subscription.
     Lifetime {
         /// How much Transactions Per Second this subscription gives (in uTPS).
@@ -55,7 +55,8 @@ pub enum Subscription {
         #[codec(compact)]
         tps: u32,
         /// ???
-        address: Option<AccountId>,
+        // address: AccountId,
+        address: T::AccountId,
     },
 }
 
@@ -467,9 +468,7 @@ pub mod pallet {
 
                     // ???
                     if let Subscription::Auto { ref address, .. } = auction.kind {
-                        if let Some(a) = address {
-                            subscription_id = a;
-                        };
+                        subscription_id = address;
                     };
 
                     // register subscription
