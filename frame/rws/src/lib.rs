@@ -33,8 +33,6 @@ use sp_runtime::{
 
 pub use pallet::*;
 
-// pub type AccountId = <<MultiSignature as Verify>::Signer as IdentifyAccount>::AccountId;
-
 #[derive(PartialEq, Eq, Clone, Encode, Decode, TypeInfo, RuntimeDebug)]
 pub enum Subscription<AccountId> {
     /// Lifetime subscription.
@@ -49,12 +47,12 @@ pub enum Subscription<AccountId> {
         #[codec(compact)]
         days: u32,
     },
-    /// ???
+    /// Auto-renewal subscription. Can use different address.
     Auto {
         /// How much Transactions Per Second this subscription gives (in uTPS).
         #[codec(compact)]
         tps: u32,
-        /// ???
+        /// The account for which the subscription is being purchased.
         address: AccountId,
     },
 }
@@ -469,9 +467,8 @@ pub mod pallet {
                         T::AuctionCurrency::slash_reserved(&subscription_id, auction.best_price);
                     T::AuctionCurrency::burn(slash.peek());
 
-                    // ???
-                    let subscription_id = if let Subscription::Auto { address, .. } = &auction.kind
-                    {
+                    // account for which the subscription was purchased.
+                    let id = if let Subscription::Auto { address, .. } = &auction.kind {
                         address
                     } else {
                         subscription_id
@@ -479,7 +476,7 @@ pub mod pallet {
 
                     // register subscription
                     <Ledger<T>>::insert(
-                        subscription_id,
+                        id,
                         SubscriptionLedger::new(T::Time::now(), auction.kind.clone()),
                     );
                 }
