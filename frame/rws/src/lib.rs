@@ -47,13 +47,13 @@ pub enum Subscription<AccountId> {
         #[codec(compact)]
         days: u32,
     },
-    /// Auto-renewal subscription. Can use different address.
-    Auto {
+    /// Subscription for a different address.
+    ForAddress {
+        /// The account for which the subscription is being purchased.
+        address: AccountId,
         /// How much Transactions Per Second this subscription gives (in uTPS).
         #[codec(compact)]
         tps: u32,
-        /// The account for which the subscription is being purchased.
-        address: AccountId,
     },
 }
 
@@ -468,7 +468,7 @@ pub mod pallet {
                     T::AuctionCurrency::burn(slash.peek());
 
                     // account for which the subscription was purchased.
-                    let id = if let Subscription::Auto { address, .. } = &auction.kind {
+                    let id = if let Subscription::ForAddress { address, .. } = &auction.kind {
                         address
                     } else {
                         subscription_id
@@ -505,7 +505,7 @@ pub mod pallet {
                         0u32
                     }
                 }
-                Subscription::Auto { tps, .. } => tps,
+                Subscription::ForAddress { tps, .. } => tps,
             };
 
             let delta: u64 = (now.clone() - subscription.last_update).into();
