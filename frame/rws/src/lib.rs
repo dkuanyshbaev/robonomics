@@ -358,6 +358,29 @@ pub mod pallet {
             Ok(().into())
         }
 
+        /// Set RWS subscription devices for other address.
+        ///
+        /// # <weight>
+        /// - O(1).
+        /// - Limited storage reads.
+        /// - One DB change.
+        /// # </weight>
+        #[pallet::weight(100_000)]
+        pub fn set_devices_for_address(
+            origin: OriginFor<T>,
+            devices: Vec<T::AccountId>,
+            subscription_id: T::AccountId,
+        ) -> DispatchResultWithPostInfo {
+            let sender = ensure_signed(origin)?;
+            ensure!(
+                <Ledger<T>>::get(subscription_id.clone()).is_some(),
+                Error::<T>::NoSubscription
+            );
+            <Devices<T>>::insert(subscription_id.clone(), devices.clone());
+            Self::deposit_event(Event::NewDevices(subscription_id, devices));
+            Ok(().into())
+        }
+
         /// Change account bandwidth share rate by authority.
         ///
         /// Change RWS oracle account.
