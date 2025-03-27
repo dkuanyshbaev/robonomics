@@ -430,6 +430,22 @@ pub mod pallet {
             Ok(().into())
         }
 
+        /// ???
+        #[pallet::weight(100_000)]
+        pub fn set_subscription_for_address(
+            origin: OriginFor<T>,
+            target: T::AccountId,
+            subscription: Subscription<T::AccountId>,
+        ) -> DispatchResultWithPostInfo {
+            let sender = ensure_signed(origin)?;
+            <Ledger<T>>::insert(
+                target.clone(),
+                SubscriptionLedger::new(T::Time::now(), subscription.clone()),
+            );
+            Self::deposit_event(Event::NewSubscription(target, subscription));
+            Ok(().into())
+        }
+
         /// Start subscription auction.
         ///
         /// The dispatch origin for this call must be _root_.
@@ -490,7 +506,7 @@ pub mod pallet {
                         T::AuctionCurrency::slash_reserved(&subscription_id, auction.best_price);
                     T::AuctionCurrency::burn(slash.peek());
 
-                    // account for which the subscription was purchased.
+                    // if this subscription is for different address
                     let id = if let Subscription::ForAddress { address, .. } = &auction.kind {
                         address
                     } else {
