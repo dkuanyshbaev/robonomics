@@ -26,6 +26,7 @@ use sc_consensus_grandpa::{
 };
 use sc_executor::{HeapAllocStrategy, WasmExecutor, DEFAULT_HEAP_ALLOC_STRATEGY};
 use sc_network::service::traits::NetworkBackend;
+use sc_network_sync::WarpSyncConfig;
 use sc_service::{config::Configuration, error::Error as ServiceError, TaskManager};
 use sc_transaction_pool_api::OffchainTransactionPoolFactory;
 use sp_api::ConstructRuntimeApi;
@@ -302,7 +303,7 @@ where
             spawn_handle: task_manager.spawn_handle(),
             import_queue,
             block_announce_validator_builder: None,
-            warp_sync_config: None,
+            warp_sync_config: Some(WarpSyncConfig::WithProvider(warp_sync)),
             block_relay: None,
             metrics,
         })?;
