@@ -17,7 +17,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //! DevNet service implementation.
 
-use robonomics_primitives::{AccountId, Balance, Block, Nonce};
+use robonomics_primitives::{AccountId, Balance, Block, Hash, Nonce};
 
 use sc_client_api::{Backend, BlockBackend};
 use sc_consensus_aura::{ImportQueueParams, SlotProportion, StartAuraParams};
@@ -255,7 +255,6 @@ where
         other: (rpc_builder, block_import, grandpa_link, mut telemetry),
     } = new_partial(&config)?;
 
-    use robonomics_primitives::Hash;
     let mut net_config = sc_network::config::FullNetworkConfiguration::<
         _,
         _,
@@ -412,7 +411,7 @@ where
     let config = sc_consensus_grandpa::Config {
         // FIXME #1578 make this available through chainspec
         gossip_duration: std::time::Duration::from_millis(333),
-        justification_generation_period: 512,
+        justification_generation_period: GRANDPA_JUSTIFICATION_PERIOD,
         name: Some(name),
         observer_enabled: false,
         local_role: role,
