@@ -125,30 +125,45 @@ const NORMAL_DISPATCH_RATIO: Perbill = Perbill::from_percent(75);
 /// We allow for 1 seconds of compute with a 2 second average block time.
 const MAXIMUM_BLOCK_WEIGHT: Weight = Weight::from_parts(WEIGHT_REF_TIME_PER_SECOND, u64::MAX);
 
+// parameter_types! {
+//     pub const BlockHashCount: BlockNumber = 2400;
+//     pub const Version: RuntimeVersion = VERSION;
+//     pub RuntimeBlockLength: BlockLength =
+//         BlockLength::max_with_normal_ratio(5 * 1024 * 1024, NORMAL_DISPATCH_RATIO);
+//     pub RuntimeBlockWeights: BlockWeights = BlockWeights::builder()
+//         .base_block(BlockExecutionWeight::get())
+//         .for_class(DispatchClass::all(), |weights| {
+//             weights.base_extrinsic = ExtrinsicBaseWeight::get();
+//         })
+//         .for_class(DispatchClass::Normal, |weights| {
+//             weights.max_total = Some(NORMAL_DISPATCH_RATIO * MAXIMUM_BLOCK_WEIGHT);
+//         })
+//         .for_class(DispatchClass::Operational, |weights| {
+//             weights.max_total = Some(MAXIMUM_BLOCK_WEIGHT);
+//             // Operational transactions have some extra reserved space, so that they
+//             // are included even if block reached `MAXIMUM_BLOCK_WEIGHT`.
+//             weights.reserved = Some(
+//                 MAXIMUM_BLOCK_WEIGHT - NORMAL_DISPATCH_RATIO * MAXIMUM_BLOCK_WEIGHT
+//             );
+//         })
+//         .avg_block_initialization(AVERAGE_ON_INITIALIZE_RATIO)
+//         .build_or_panic();
+//     pub SS58Prefix: u8 = 32;
+// }
+
 parameter_types! {
     pub const BlockHashCount: BlockNumber = 2400;
     pub const Version: RuntimeVersion = VERSION;
+
+    /// We allow for 2 seconds of compute with a 6 second average block time.
+    pub RuntimeBlockWeights: BlockWeights = BlockWeights::with_sensible_defaults(
+        Weight::from_parts(2u64 * WEIGHT_REF_TIME_PER_SECOND, u64::MAX),
+        NORMAL_DISPATCH_RATIO,
+    );
     pub RuntimeBlockLength: BlockLength =
         BlockLength::max_with_normal_ratio(5 * 1024 * 1024, NORMAL_DISPATCH_RATIO);
-    pub RuntimeBlockWeights: BlockWeights = BlockWeights::builder()
-        .base_block(BlockExecutionWeight::get())
-        .for_class(DispatchClass::all(), |weights| {
-            weights.base_extrinsic = ExtrinsicBaseWeight::get();
-        })
-        .for_class(DispatchClass::Normal, |weights| {
-            weights.max_total = Some(NORMAL_DISPATCH_RATIO * MAXIMUM_BLOCK_WEIGHT);
-        })
-        .for_class(DispatchClass::Operational, |weights| {
-            weights.max_total = Some(MAXIMUM_BLOCK_WEIGHT);
-            // Operational transactions have some extra reserved space, so that they
-            // are included even if block reached `MAXIMUM_BLOCK_WEIGHT`.
-            weights.reserved = Some(
-                MAXIMUM_BLOCK_WEIGHT - NORMAL_DISPATCH_RATIO * MAXIMUM_BLOCK_WEIGHT
-            );
-        })
-        .avg_block_initialization(AVERAGE_ON_INITIALIZE_RATIO)
-        .build_or_panic();
-    pub SS58Prefix: u8 = 32;
+    // pub const SS58Prefix: u8 = 42;
+    pub const SS58Prefix: u8 = 32;
 }
 
 impl frame_system::Config for Runtime {
@@ -217,9 +232,11 @@ impl pallet_balances::Config for Runtime {
     type ExistentialDeposit = ExistentialDeposit;
     type AccountStore = frame_system::Pallet<Runtime>;
     type MaxLocks = MaxLocks;
-    type MaxReserves = MaxReserves;
+    // type MaxReserves = MaxReserves;
+    type MaxReserves = ();
     type ReserveIdentifier = [u8; 8];
-    type WeightInfo = ();
+    // type WeightInfo = ();
+    type WeightInfo = pallet_balances::weights::SubstrateWeight<Runtime>;
     type FreezeIdentifier = ();
     type MaxFreezes = ();
     type RuntimeHoldReason = ();
@@ -330,21 +347,37 @@ impl_opaque_keys! {
 }
 
 impl pallet_aura::Config for Runtime {
-    type MaxAuthorities = MaxAuthorities;
+    // type MaxAuthorities = MaxAuthorities;
+    // type AuthorityId = AuraId;
+    // type DisabledValidators = ();
+    // type AllowMultipleBlocksPerSlot = ConstBool<false>;
+    // type SlotDuration = ConstU64<SLOT_DURATION>;
+
     type AuthorityId = AuraId;
     type DisabledValidators = ();
+    type MaxAuthorities = ConstU32<32>;
     type AllowMultipleBlocksPerSlot = ConstBool<false>;
-    type SlotDuration = ConstU64<SLOT_DURATION>;
+    type SlotDuration = pallet_aura::MinimumPeriodTimesTwo<Runtime>;
 }
 
 impl pallet_grandpa::Config for Runtime {
+    // type RuntimeEvent = RuntimeEvent;
+    // type WeightInfo = ();
+    // type MaxAuthorities = MaxAuthorities;
+    // type MaxSetIdSessionEntries = ConstU64<0>;
+    // type KeyOwnerProof = sp_core::Void;
+    // type EquivocationReportSystem = ();
+    // type MaxNominators = ConstU32<1000>;
+
     type RuntimeEvent = RuntimeEvent;
+
     type WeightInfo = ();
-    type MaxAuthorities = MaxAuthorities;
+    type MaxAuthorities = ConstU32<32>;
+    type MaxNominators = ConstU32<0>;
     type MaxSetIdSessionEntries = ConstU64<0>;
+
     type KeyOwnerProof = sp_core::Void;
     type EquivocationReportSystem = ();
-    type MaxNominators = ConstU32<1000>;
 }
 
 parameter_types! {
