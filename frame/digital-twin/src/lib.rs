@@ -18,10 +18,17 @@
 //! Digital twin runtime module. This can be compiled with `#[no_std]`, ready for Wasm.
 #![cfg_attr(not(feature = "std"), no_std)]
 
+#[cfg(feature = "runtime-benchmarks")]
+mod benchmarking;
+pub mod weights;
+
+pub use crate::weights::WeightInfo;
+// use frame_system::WeightInfo;
 pub use pallet::*;
 
 #[frame_support::pallet]
 pub mod pallet {
+    use super::*;
     use frame_support::pallet_prelude::*;
     use frame_system::pallet_prelude::*;
     use sp_core::H256;
@@ -31,6 +38,8 @@ pub mod pallet {
     pub trait Config: frame_system::Config {
         /// The overarching event type.
         type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
+        /// Weight information for extrinsics in this pallet.
+        type WeightInfo: WeightInfo;
     }
 
     #[pallet::event]
@@ -63,13 +72,15 @@ pub mod pallet {
         StorageMap<_, Twox64Concat, u32, BTreeMap<H256, <T as frame_system::Config>::AccountId>>;
 
     #[pallet::pallet]
+    // #[pallet::generate_store(pub(super) trait Store)]
     #[pallet::without_storage_info]
     pub struct Pallet<T>(PhantomData<T>);
 
     #[pallet::call]
     impl<T: Config> Pallet<T> {
         /// Create new digital twin.
-        #[pallet::weight(50_000)]
+        #[pallet::weight(T::WeightInfo::create())]
+        #[pallet::call_index(0)]
         pub fn create(origin: OriginFor<T>) -> DispatchResultWithPostInfo {
             let sender = ensure_signed(origin)?;
             let id = <Total<T>>::get().unwrap_or(0);
@@ -80,7 +91,8 @@ pub mod pallet {
         }
 
         /// Set data source account for difital twin.
-        #[pallet::weight(50_000)]
+        #[pallet::weight(T::WeightInfo::set_source())]
+        #[pallet::call_index(1)]
         pub fn set_source(
             origin: OriginFor<T>,
             id: u32,
@@ -105,12 +117,35 @@ pub mod pallet {
             });
             Ok(().into())
         }
+
+        /// Remove data source account for difital twin.
+        #[pallet::weight(T::WeightInfo::remove_source())]
+        #[pallet::call_index(2)]
+        pub fn remove_source(
+            origin: OriginFor<T>,
+            id: u32,
+            topic: H256,
+            source: T::AccountId,
+        ) -> DispatchResultWithPostInfo {
+            let sender = ensure_signed(origin)?;
+            ensure!(
+                <Owner<T>>::get(id) == Some(sender.clone()),
+                "sender should be a twin owner"
+            );
+            Self::deposit_event(Event::TopicChanged(sender, id, topic, source.clone()));
+            <DigitalTwin<T>>::mutate(id, |m| {
+                if let Some(map) = m {
+                    map.remove(&topic);
+                }
+            });
+            Ok(().into())
+        }
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::{self as digital_twin, *};
+    use crate::{self as digital_twin, weights::RobonomicsWeight, *};
 
     use frame_support::{assert_err, assert_ok, parameter_types};
     use sp_runtime::{traits::IdentityLookup, BuildStorage, DispatchError};
@@ -152,6 +187,13 @@ mod tests {
         type SS58Prefix = ();
         type OnSetCode = ();
         type MaxConsumers = frame_support::traits::ConstU32<16>;
+        type RuntimeTask = RuntimeTask;
+        type ExtensionsWeightInfo = ();
+        type SingleBlockMigrations = ();
+        type MultiBlockMigrator = ();
+        type PreInherents = ();
+        type PostInherents = ();
+        type PostTransactions = ();
     }
 
     impl Config for Runtime {
@@ -196,6 +238,37 @@ mod tests {
                 0,
                 Default::default(),
                 bad_sender
+            ));
+        })
+    }
+
+    #[test]
+    fn test_remove_source() {
+        new_test_ext().execute_with(|| {
+            let sender = 1;
+            let bad_sender = 2;
+            let source = 3;
+            assert_ok!(DigitalTwin::create(RuntimeOrigin::signed(sender)));
+            assert_ok!(DigitalTwin::set_source(
+                RuntimeOrigin::signed(sender),
+                0,
+                Default::default(),
+                source
+            ));
+            assert_err!(
+                DigitalTwin::remove_source(
+                    RuntimeOrigin::signed(bad_sender),
+                    0,
+                    Default::default(),
+                    source
+                ),
+                DispatchError::Other("sender should be a twin owner")
+            );
+            assert_ok!(DigitalTwin::remove_source(
+                RuntimeOrigin::signed(sender),
+                0,
+                Default::default(),
+                source
             ));
         })
     }

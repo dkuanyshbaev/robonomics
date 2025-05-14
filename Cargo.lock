@@ -8012,6 +8012,7 @@ dependencies = [
 name = "pallet-robonomics-digital-twin"
 version = "0.3.0"
 dependencies = [
+ "frame-benchmarking",
  "frame-support 39.1.0",
  "frame-system",
  "parity-scale-codec",

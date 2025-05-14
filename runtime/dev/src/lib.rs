@@ -606,6 +606,8 @@ impl pallet_robonomics_rws::Config for Runtime {
 
 impl pallet_robonomics_digital_twin::Config for Runtime {
     type RuntimeEvent = RuntimeEvent;
+    type WeightInfo = pallet_robonomics_digital_twin::weights::RobonomicsWeight<Runtime>;
+    // type WeightInfo = pallet_robonomics_digital_twin::weights::SubstrateWeight<Runtime>;
 }
 
 impl pallet_robonomics_liability::Config for Runtime {
@@ -711,6 +713,7 @@ mod benches {
         // Robonomics pallets
         [robonomics_datalog, Datalog]
         [robonomics_launch, Launch]
+        [robonomics_digital_twin, DigitalTwin]
     );
 }
 
