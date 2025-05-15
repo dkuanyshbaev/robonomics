@@ -22,9 +22,8 @@
 mod benchmarking;
 pub mod weights;
 
-pub use crate::weights::WeightInfo;
-// use frame_system::WeightInfo;
 pub use pallet::*;
+pub use weights::WeightInfo;
 
 #[frame_support::pallet]
 pub mod pallet {
@@ -72,15 +71,14 @@ pub mod pallet {
         StorageMap<_, Twox64Concat, u32, BTreeMap<H256, <T as frame_system::Config>::AccountId>>;
 
     #[pallet::pallet]
-    // #[pallet::generate_store(pub(super) trait Store)]
     #[pallet::without_storage_info]
     pub struct Pallet<T>(PhantomData<T>);
 
     #[pallet::call]
     impl<T: Config> Pallet<T> {
         /// Create new digital twin.
-        #[pallet::weight(T::WeightInfo::create())]
         #[pallet::call_index(0)]
+        #[pallet::weight(T::WeightInfo::create())]
         pub fn create(origin: OriginFor<T>) -> DispatchResultWithPostInfo {
             let sender = ensure_signed(origin)?;
             let id = <Total<T>>::get().unwrap_or(0);
@@ -91,8 +89,8 @@ pub mod pallet {
         }
 
         /// Set data source account for difital twin.
-        #[pallet::weight(T::WeightInfo::set_source())]
         #[pallet::call_index(1)]
+        #[pallet::weight(T::WeightInfo::set_source())]
         pub fn set_source(
             origin: OriginFor<T>,
             id: u32,
@@ -119,8 +117,8 @@ pub mod pallet {
         }
 
         /// Remove data source account for difital twin.
-        #[pallet::weight(T::WeightInfo::remove_source())]
         #[pallet::call_index(2)]
+        #[pallet::weight(T::WeightInfo::remove_source())]
         pub fn remove_source(
             origin: OriginFor<T>,
             id: u32,

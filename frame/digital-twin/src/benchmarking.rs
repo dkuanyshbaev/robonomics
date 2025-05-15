@@ -17,28 +17,39 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Benchmarks for Digital Twin Pallet
 
+#![cfg(feature = "runtime-benchmarks")]
+
 use super::{Pallet as DigitalTwin, *};
-use frame_benchmarking::{account, benchmarks, impl_benchmark_test_suite};
+use frame_benchmarking::v2::*;
 use frame_system::RawOrigin;
 use sp_core::H256;
 use sp_std::prelude::*;
 
 const SEED: u32 = 0;
 
-benchmarks! {
+#[benchmarks]
+mod benchmarks {
+    use super::*;
+    #[cfg(test)]
+    use frame_system::RawOrigin;
 
-    create {
+    #[benchmark]
+    fn create() -> Result<(), BenchmarkError> {
         let caller: T::AccountId = account("caller", 1, SEED);
-
         DigitalTwin::<T>::create(RawOrigin::Signed(caller.clone()).into())?;
-    }: _(RawOrigin::Signed(caller))
 
-    set_source {
+        #[extrinsic_call]
+        create(RawOrigin::Signed(caller));
+
+        Ok(())
+    }
+
+    #[benchmark]
+    fn set_source() -> Result<(), BenchmarkError> {
         let caller: T::AccountId = account("caller", 1, SEED);
         let id: u32 = 0;
         let topic: H256 = Default::default();
         let source: T::AccountId = account("caller", 2, SEED);
-
         DigitalTwin::<T>::create(RawOrigin::Signed(caller.clone()).into())?;
         DigitalTwin::<T>::set_source(
             RawOrigin::Signed(caller.clone()).into(),
@@ -46,14 +57,19 @@ benchmarks! {
             topic,
             source.clone(),
         )?;
-    }: _(RawOrigin::Signed(caller), id, topic, source)
 
-    remove_source {
+        #[extrinsic_call]
+        set_source(RawOrigin::Signed(caller), id, topic, source);
+
+        Ok(())
+    }
+
+    #[benchmark]
+    fn remove_source() -> Result<(), BenchmarkError> {
         let caller: T::AccountId = account("caller", 1, SEED);
         let id: u32 = 0;
         let topic: H256 = Default::default();
         let source: T::AccountId = account("caller", 2, SEED);
-
         DigitalTwin::<T>::create(RawOrigin::Signed(caller.clone()).into())?;
         DigitalTwin::<T>::set_source(
             RawOrigin::Signed(caller.clone()).into(),
@@ -67,14 +83,12 @@ benchmarks! {
             topic,
             source.clone(),
         )?;
-    }: _(RawOrigin::Signed(caller), id, topic, source)
 
-    verify {
+        #[extrinsic_call]
+        remove_source(RawOrigin::Signed(caller), id, topic, source);
+
+        Ok(())
     }
-}
 
-impl_benchmark_test_suite!(
-    DigitalTwin,
-    crate::tests::new_test_ext(),
-    crate::tests::Runtime,
-);
+    impl_benchmark_test_suite!(Datalog, crate::tests::new_test_ext(), crate::tests::Runtime,);
+}

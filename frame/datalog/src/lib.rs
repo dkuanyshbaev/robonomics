@@ -26,14 +26,12 @@ mod benchmarking;
 pub mod weights;
 
 pub use pallet::*;
-// pub use weights::WeightInfo;
-pub use crate::weights::WeightInfo;
+pub use weights::WeightInfo;
 
 #[frame_support::pallet]
 #[allow(clippy::module_inception)]
 pub mod pallet {
     use super::*;
-
     use frame_support::{pallet_prelude::*, traits::Time};
     use frame_system::pallet_prelude::*;
     use parity_scale_codec::{Decode, Encode};
