@@ -578,6 +578,7 @@ impl pallet_robonomics_datalog::Config for Runtime {
 impl pallet_robonomics_launch::Config for Runtime {
     type Parameter = H256;
     type RuntimeEvent = RuntimeEvent;
+    type WeightInfo = pallet_robonomics_launch::weights::RobonomicsWeight<Runtime>;
 }
 
 parameter_types! {
