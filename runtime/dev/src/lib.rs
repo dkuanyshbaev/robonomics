@@ -572,7 +572,7 @@ impl pallet_robonomics_datalog::Config for Runtime {
     type Record = BoundedVec<u8, MaximumMessageSize>;
     type RuntimeEvent = RuntimeEvent;
     type WindowSize = WindowSize;
-    type WeightInfo = ();
+    type WeightInfo = pallet_robonomics_datalog::weights::RobonomicsWeight<Runtime>;
 }
 
 impl pallet_robonomics_launch::Config for Runtime {
@@ -607,7 +607,6 @@ impl pallet_robonomics_rws::Config for Runtime {
 impl pallet_robonomics_digital_twin::Config for Runtime {
     type RuntimeEvent = RuntimeEvent;
     type WeightInfo = pallet_robonomics_digital_twin::weights::RobonomicsWeight<Runtime>;
-    // type WeightInfo = pallet_robonomics_digital_twin::weights::SubstrateWeight<Runtime>;
 }
 
 impl pallet_robonomics_liability::Config for Runtime {
@@ -712,8 +711,8 @@ mod benches {
         [frame_system, SystemBench::<Runtime>]
         // Robonomics pallets
         [robonomics_datalog, Datalog]
-        [robonomics_launch, Launch]
         [robonomics_digital_twin, DigitalTwin]
+        [robonomics_launch, Launch]
     );
 }
 

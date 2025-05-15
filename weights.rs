@@ -17,7 +17,7 @@
 // --pallet
 // robonomics-datalog
 // --extrinsic
-//
+// 
 // --output
 // weights.rs
 
@@ -29,17 +29,9 @@
 use frame_support::{traits::Get, weights::Weight};
 use core::marker::PhantomData;
 
-/// Weight functions.
-pub trait WeightInfo {
-    fn record() -> Weight;
-    fn erase(_: u64) -> Weight;
-}
-
 /// Weight functions for `robonomics_datalog`.
-pub struct RobonomicsWeight<T>(PhantomData<T>);
-impl<T: frame_system::Config> WeightInfo for RobonomicsWeight<T> {
-// pub struct WeightInfo<T>(PhantomData<T>);
-// impl<T: frame_system::Config> robonomics_datalog::WeightInfo for WeightInfo<T> {
+pub struct WeightInfo<T>(PhantomData<T>);
+impl<T: frame_system::Config> robonomics_datalog::WeightInfo for WeightInfo<T> {
 	/// Storage: `Timestamp::Now` (r:1 w:0)
 	/// Proof: `Timestamp::Now` (`max_values`: Some(1), `max_size`: Some(8), added: 503, mode: `MaxEncodedLen`)
 	/// Storage: `Datalog::DatalogIndex` (r:1 w:1)
@@ -50,8 +42,8 @@ impl<T: frame_system::Config> WeightInfo for RobonomicsWeight<T> {
 		// Proof Size summary in bytes:
 		//  Measured:  `148`
 		//  Estimated: `3521`
-		// Minimum execution time: 23_010_000 picoseconds.
-		Weight::from_parts(23_860_000, 0)
+		// Minimum execution time: 22_394_000 picoseconds.
+		Weight::from_parts(23_081_000, 0)
 			.saturating_add(Weight::from_parts(0, 3521))
 			.saturating_add(T::DbWeight::get().reads(2))
 			.saturating_add(T::DbWeight::get().writes(2))
@@ -60,12 +52,12 @@ impl<T: frame_system::Config> WeightInfo for RobonomicsWeight<T> {
 	/// Proof: `Datalog::DatalogIndex` (`max_values`: None, `max_size`: Some(56), added: 2531, mode: `MaxEncodedLen`)
 	/// Storage: `Datalog::DatalogItem` (r:0 w:127)
 	/// Proof: `Datalog::DatalogItem` (`max_values`: None, `max_size`: Some(570), added: 3045, mode: `MaxEncodedLen`)
-	fn erase(_: u64) -> Weight {
+	fn erase() -> Weight {
 		// Proof Size summary in bytes:
 		//  Measured:  `106`
 		//  Estimated: `3521`
-		// Minimum execution time: 215_538_000 picoseconds.
-		Weight::from_parts(219_144_000, 0)
+		// Minimum execution time: 204_510_000 picoseconds.
+		Weight::from_parts(207_102_000, 0)
 			.saturating_add(Weight::from_parts(0, 3521))
 			.saturating_add(T::DbWeight::get().reads(1))
 			.saturating_add(T::DbWeight::get().writes(128))

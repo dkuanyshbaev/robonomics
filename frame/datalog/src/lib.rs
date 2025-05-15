@@ -21,22 +21,23 @@
 #![allow(clippy::unused_unit)]
 #![allow(clippy::from_over_into)]
 
-pub use pallet::*;
-pub use weights::WeightInfo;
-
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarking;
-mod weights;
+pub mod weights;
+
+pub use pallet::*;
+// pub use weights::WeightInfo;
+pub use crate::weights::WeightInfo;
 
 #[frame_support::pallet]
 #[allow(clippy::module_inception)]
 pub mod pallet {
+    use super::*;
+
     use frame_support::{pallet_prelude::*, traits::Time};
     use frame_system::pallet_prelude::*;
     use parity_scale_codec::{Decode, Encode};
     use sp_std::prelude::*;
-
-    use super::*;
 
     /// The current storage version.
     const STORAGE_VERSION: StorageVersion = StorageVersion::new(1);
@@ -103,8 +104,8 @@ pub mod pallet {
     #[pallet::call]
     impl<T: Config> Pallet<T> {
         /// Store new data into blockchain.
-        #[pallet::weight(T::WeightInfo::record())]
         #[pallet::call_index(0)]
+        #[pallet::weight(T::WeightInfo::record())]
         pub fn record(origin: OriginFor<T>, record: T::Record) -> DispatchResultWithPostInfo {
             let sender = ensure_signed(origin)?;
 
@@ -126,8 +127,8 @@ pub mod pallet {
         }
 
         /// Clear account datalog.
-        #[pallet::weight(T::WeightInfo::erase(T::WindowSize::get()))]
         #[pallet::call_index(1)]
+        #[pallet::weight(T::WeightInfo::erase(T::WindowSize::get()))]
         pub fn erase(origin: OriginFor<T>) -> DispatchResultWithPostInfo {
             let sender = ensure_signed(origin)?;
 
@@ -254,7 +255,7 @@ mod tests {
     use sp_core::H256;
     use sp_runtime::{traits::IdentityLookup, BuildStorage, DispatchError};
 
-    use crate::{self as datalog, *};
+    use crate::{self as datalog, weights::RobonomicsWeight, *};
 
     type Block = frame_system::mocking::MockBlock<Runtime>;
     type Item = RingBufferItem<Runtime>;
