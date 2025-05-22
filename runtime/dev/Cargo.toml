@@ -164,4 +164,8 @@ runtime-benchmarks = [
   "polkadot-runtime-common/runtime-benchmarks",
   "sp-runtime/runtime-benchmarks",
   "pallet-robonomics-digital-twin/runtime-benchmarks",
+  "pallet-robonomics-rws/runtime-benchmarks",
+  # "pallet-robonomics-liability/runtime-benchmarks",
+  # "pallet-robonomics-lighthouse/runtime-benchmarks",
+  # "pallet-robonomics-xcm-info/runtime-benchmarks",
 ]

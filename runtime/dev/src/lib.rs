@@ -714,6 +714,10 @@ mod benches {
         [robonomics_datalog, Datalog]
         [robonomics_digital_twin, DigitalTwin]
         [robonomics_launch, Launch]
+        // [robonomics_liability, Liability]
+        // [robonomics_lighthouse, Lighthouse]
+        [robonomics_rws, RWS]
+        // [robonomics_xcm_info, XcmInfo]
     );
 }
 

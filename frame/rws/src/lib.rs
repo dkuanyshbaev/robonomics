@@ -25,10 +25,15 @@ use parity_scale_codec::{Decode, Encode, HasCompact, MaxEncodedLen};
 use scale_info::TypeInfo;
 use sp_runtime::RuntimeDebug;
 
-pub use pallet::*;
+#[cfg(feature = "runtime-benchmarks")]
+mod benchmarking;
+// pub mod weights;
 
-//#[cfg(test)]
-//mod tests;
+pub use pallet::*;
+// pub use weights::WeightInfo;
+
+#[cfg(test)]
+mod tests;
 
 #[derive(PartialEq, Eq, Clone, Encode, Decode, TypeInfo, RuntimeDebug, MaxEncodedLen)]
 pub enum Subscription {
@@ -124,7 +129,7 @@ pub mod pallet {
     };
     use sp_std::prelude::*;
 
-    type BalanceOf<T> = <<T as Config>::AuctionCurrency as Currency<
+    pub type BalanceOf<T> = <<T as Config>::AuctionCurrency as Currency<
         <T as frame_system::Config>::AccountId,
     >>::Balance;
 
@@ -269,7 +274,7 @@ pub mod pallet {
         ///
         /// # <weight>
         /// - Dependes of call method.
-        /// - Basically this sould be free by concept.
+        /// - Basically this should be free by concept.
         /// # </weight>
         #[pallet::weight((0, call.get_dispatch_info().class, Pays::No))]
         pub fn call(
@@ -428,7 +433,7 @@ pub mod pallet {
 
     impl<T: Config> Pallet<T> {
         /// Create new auction.
-        fn new_auction(kind: Subscription) {
+        pub fn new_auction(kind: Subscription) {
             // get next index and increment
             let index = Self::auction_next();
             <AuctionNext<T>>::mutate(|x| *x += 1u8.into());

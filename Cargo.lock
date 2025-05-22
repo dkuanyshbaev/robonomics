@@ -8043,6 +8043,7 @@ dependencies = [
 name = "pallet-robonomics-liability"
 version = "0.10.0"
 dependencies = [
+ "frame-benchmarking",
  "frame-support 39.1.0",
  "frame-system",
  "hex-literal 0.3.4",
@@ -8062,6 +8063,7 @@ name = "pallet-robonomics-lighthouse"
 version = "0.5.0"
 dependencies = [
  "async-trait",
+ "frame-benchmarking",
  "frame-support 39.1.0",
  "frame-system",
  "parity-scale-codec",
@@ -8076,6 +8078,7 @@ dependencies = [
 name = "pallet-robonomics-rws"
 version = "1.6.0"
 dependencies = [
+ "frame-benchmarking",
  "frame-support 39.1.0",
  "frame-system",
  "pallet-balances",
@@ -8324,6 +8327,7 @@ dependencies = [
 name = "pallet-xcm-info"
 version = "0.1.0"
 dependencies = [
+ "frame-benchmarking",
  "frame-support 39.1.0",
  "frame-system",
  "parity-scale-codec",

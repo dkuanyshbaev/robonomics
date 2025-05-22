@@ -23,7 +23,12 @@
 use sp_inherents::InherentData;
 use sp_inherents::{InherentIdentifier, IsFatalError};
 
+#[cfg(feature = "runtime-benchmarks")]
+mod benchmarking;
+// pub mod weights;
+
 pub use pallet::*;
+// pub use weights::WeightInfo;
 
 #[frame_support::pallet]
 pub mod pallet {
