@@ -603,6 +603,7 @@ impl pallet_robonomics_rws::Config for Runtime {
     type MinimalBid = MinimalBid;
     type MaxDevicesAmount = MaxDevicesAmount;
     type MaxAuctionIndexesAmount = MaxAuctionIndexesAmount;
+    type WeightInfo = pallet_robonomics_rws::weights::RobonomicsWeight<Runtime>;
 }
 
 impl pallet_robonomics_digital_twin::Config for Runtime {

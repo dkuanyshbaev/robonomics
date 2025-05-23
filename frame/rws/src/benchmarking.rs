@@ -50,8 +50,6 @@ mod benchmarks {
     // ???
     // #[benchmark]
     // fn call() {
-    //     #[extrinsic_call]
-    //     _(RawOrigin::Signed(caller), subscription);
     // }
 
     #[benchmark]
@@ -97,8 +95,13 @@ mod benchmarks {
         set_subscription(RawOrigin::Signed(oracle), target, Default::default());
     }
 
-    // #[benchmark]
-    // fn start_auction() {}
+    #[benchmark]
+    fn start_auction() {
+        let caller: T::AccountId = whitelisted_caller();
+
+        #[extrinsic_call]
+        _(RawOrigin::Root, Default::default());
+    }
 
     impl_benchmark_test_suite!(Rws, crate::tests::new_test_ext(), crate::tests::Runtime,);
 }
