@@ -22,11 +22,13 @@
 use super::{Pallet as Rws, *};
 use frame_benchmarking::v2::*;
 use frame_support::{
+    assert_ok,
     pallet_prelude::{Get, MaxEncodedLen},
     traits::Currency,
 };
 use frame_system::RawOrigin;
 use parity_scale_codec::{Decode, Encode};
+use sp_runtime::traits::StaticLookup;
 use sp_std::prelude::*;
 
 use crate::*;
@@ -47,7 +49,10 @@ mod benchmarks {
 
     // ???
     // #[benchmark]
-    // fn call() {}
+    // fn call() {
+    //     #[extrinsic_call]
+    //     _(RawOrigin::Signed(caller), subscription);
+    // }
 
     #[benchmark]
     fn bid() {
@@ -64,52 +69,33 @@ mod benchmarks {
     #[benchmark]
     fn set_devices() {
         let caller: T::AccountId = whitelisted_caller();
-        let device: T::AccountId = account("device", 1, SEED);
+        let device: T::AccountId = whitelisted_caller();
         let mut devices = frame_support::BoundedVec::new();
-        let _ = devices.try_push(device);
+        assert_ok!(devices.try_push(device));
 
         #[extrinsic_call]
         _(RawOrigin::Signed(caller), devices);
     }
 
-    // #[benchmark]
-    // fn set_oracle() {}
+    #[benchmark]
+    fn set_oracle() {
+        let oracle = T::Lookup::unlookup(whitelisted_caller());
 
-    // #[benchmark]
-    // fn set_subscription() {
-    //     let caller: T::AccountId = account("caller", 1, SEED);
-    //     let oracle: T::AccountId = account("caller", 2, SEED);
-    //
-    //     // let device: T::AccountId = account("device", 2, SEED);
-    //     // let mut devices = frame_support::BoundedVec::new();
-    //     // let _ = devices.try_push(device);
-    //
-    //     #[extrinsic_call]
-    //     set_subscription(RawOrigin::Signed(caller), caller, Default::default());
-    //
-    //     // let oracle = CHARLIE;
-    //     // new_test_ext().execute_with(|| {
-    //     //     assert_ok!(RWS::set_oracle(Origin::root(), oracle));
-    //     //
-    //     //     assert_err!(
-    //     //         RWS::set_subscription(Origin::none(), ALICE, Default::default()),
-    //     //         DispatchError::BadOrigin,
-    //     //     );
-    //     //
-    //     //     assert_err!(
-    //     //         RWS::set_subscription(Origin::signed(ALICE), ALICE, Default::default()),
-    //     //         Error::<Runtime>::OracleOnlyCall,
-    //     //     );
-    //     //
-    //     //     let lifetime = Subscription::Lifetime { tps: 10 };
-    //     //     assert_ok!(RWS::set_subscription(
-    //     //         Origin::signed(oracle),
-    //     //         ALICE,
-    //     //         lifetime.clone(),
-    //     //     ));
-    //     //     assert_eq!(RWS::ledger(ALICE).unwrap().kind, lifetime);
-    //     // })
-    // }
+        #[extrinsic_call]
+        _(RawOrigin::Root, oracle);
+    }
+
+    #[benchmark]
+    fn set_subscription() {
+        let oracle: T::AccountId = whitelisted_caller();
+        let target: T::AccountId = whitelisted_caller();
+        let oracle_lookup = T::Lookup::unlookup(oracle.clone());
+
+        assert_ok!(Rws::<T>::set_oracle(RawOrigin::Root.into(), oracle_lookup));
+
+        #[extrinsic_call]
+        set_subscription(RawOrigin::Signed(oracle), target, Default::default());
+    }
 
     // #[benchmark]
     // fn start_auction() {}

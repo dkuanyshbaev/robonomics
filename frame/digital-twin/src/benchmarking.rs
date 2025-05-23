@@ -49,7 +49,7 @@ mod benchmarks {
         let caller: T::AccountId = account("caller", 1, SEED);
         let id: u32 = 0;
         let topic: H256 = Default::default();
-        let source: T::AccountId = account("caller", 2, SEED);
+        let source: T::AccountId = account("source", 2, SEED);
         DigitalTwin::<T>::create(RawOrigin::Signed(caller.clone()).into())?;
         DigitalTwin::<T>::set_source(
             RawOrigin::Signed(caller.clone()).into(),
@@ -69,7 +69,7 @@ mod benchmarks {
         let caller: T::AccountId = account("caller", 1, SEED);
         let id: u32 = 0;
         let topic: H256 = Default::default();
-        let source: T::AccountId = account("caller", 2, SEED);
+        let source: T::AccountId = account("source", 2, SEED);
         DigitalTwin::<T>::create(RawOrigin::Signed(caller.clone()).into())?;
         DigitalTwin::<T>::set_source(
             RawOrigin::Signed(caller.clone()).into(),
