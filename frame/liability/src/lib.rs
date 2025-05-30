@@ -246,6 +246,13 @@ mod tests {
         type SS58Prefix = ();
         type OnSetCode = ();
         type MaxConsumers = frame_support::traits::ConstU32<16>;
+        type RuntimeTask = RuntimeTask;
+        type ExtensionsWeightInfo = ();
+        type SingleBlockMigrations = ();
+        type MultiBlockMigrator = ();
+        type PreInherents = ();
+        type PostInherents = ();
+        type PostTransactions = ();
     }
 
     parameter_types! {
@@ -267,7 +274,8 @@ mod tests {
         type FreezeIdentifier = ();
         type MaxFreezes = ();
         type RuntimeHoldReason = ();
-        type MaxHolds = ();
+        type RuntimeFreezeReason = RuntimeFreezeReason;
+        type DoneSlashHandler = ();
     }
 
     impl Config for Runtime {
@@ -320,7 +328,7 @@ mod tests {
         });
     }
 
-    fn get_params_proof(
+    pub fn get_params_proof(
         uri: &str,
         technics: &TechnicsFor<Runtime>,
         economics: &EconomicsFor<Runtime>,
