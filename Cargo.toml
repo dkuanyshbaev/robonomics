@@ -209,7 +209,7 @@ polkadot-runtime-parachains = { version = "18.1.0", default-features = false }
 polkadot-primitives = { version = "17.1.0", default-features = false }
 polkadot-parachain-primitives = { version = "15.0.0", default-features = false }
 polkadot-runtime-common = { version = "18.1.0", default-features = false }
-staging-xcm = { version = "15.0.3" }
+staging-xcm = { version = "15.0.3", default-features = false }
 staging-xcm-builder = { version = "18.2.0" }
 staging-xcm-executor = { version = "18.0.2" }
 

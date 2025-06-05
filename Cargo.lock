@@ -2801,6 +2801,7 @@ dependencies = [
  "pallet-robonomics-launch",
  "pallet-robonomics-liability",
  "pallet-robonomics-rws",
+ "pallet-robonomics-xcm-info",
  "pallet-scheduler",
  "pallet-sudo",
  "pallet-timestamp",
@@ -6771,6 +6772,7 @@ dependencies = [
  "pallet-robonomics-liability",
  "pallet-robonomics-lighthouse",
  "pallet-robonomics-rws",
+ "pallet-robonomics-xcm-info",
  "pallet-scheduler",
  "pallet-sudo",
  "pallet-timestamp",
@@ -6780,7 +6782,6 @@ dependencies = [
  "pallet-utility",
  "pallet-vesting",
  "pallet-xcm",
- "pallet-xcm-info",
  "parity-scale-codec",
  "polkadot-parachain",
  "polkadot-primitives",
@@ -8093,6 +8094,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "pallet-robonomics-xcm-info"
+version = "0.1.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support 39.1.0",
+ "frame-system",
+ "parity-scale-codec",
+ "robonomics-primitives",
+ "scale-info",
+ "sp-runtime 40.1.0",
+ "sp-std 14.0.0",
+ "staging-xcm",
+]
+
+[[package]]
 name = "pallet-scheduler"
 version = "40.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -8321,20 +8337,6 @@ dependencies = [
  "staging-xcm-executor",
  "tracing",
  "xcm-runtime-apis",
-]
-
-[[package]]
-name = "pallet-xcm-info"
-version = "0.1.0"
-dependencies = [
- "frame-benchmarking",
- "frame-support 39.1.0",
- "frame-system",
- "parity-scale-codec",
- "scale-info",
- "sp-runtime 40.1.0",
- "sp-std 14.0.0",
- "staging-xcm",
 ]
 
 [[package]]

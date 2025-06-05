@@ -20,10 +20,10 @@
 
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarking;
-// pub mod weights;
+pub mod weights;
 
 pub use pallet::*;
-// pub use weights::WeightInfo;
+pub use weights::WeightInfo;
 
 #[frame_support::pallet]
 pub mod pallet {
@@ -31,7 +31,8 @@ pub mod pallet {
     use frame_support::pallet_prelude::*;
     use frame_system::{ensure_root, pallet_prelude::*};
     use sp_runtime::traits::MaybeEquivalence;
-    use xcm::latest::prelude::*;
+    use staging_xcm::latest::prelude::*;
+    use staging_xcm::opaque::v3::MultiLocation;
 
     #[pallet::config]
     pub trait Config: frame_system::Config {
@@ -39,6 +40,8 @@ pub mod pallet {
         type AssetId: Parameter + Copy + Default + MaxEncodedLen;
         /// The overarching event type.
         type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
+        /// Extrinsic weights
+        type WeightInfo: WeightInfo;
     }
 
     #[pallet::error]

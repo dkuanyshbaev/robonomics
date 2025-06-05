@@ -627,6 +627,12 @@ impl pallet_robonomics_liability::Config for Runtime {
     type RuntimeEvent = RuntimeEvent;
 }
 
+impl pallet_robonomics_xcm_info::Config for Runtime {
+    type AssetId = AssetId;
+    type RuntimeEvent = RuntimeEvent;
+    type WeightInfo = pallet_robonomics_xcm_info::weights::RobonomicsWeight<Runtime>;
+}
+
 construct_runtime!(
     pub enum Runtime {
         // Basic stuff.
@@ -658,6 +664,7 @@ construct_runtime!(
         RWS: pallet_robonomics_rws,
         DigitalTwin: pallet_robonomics_digital_twin,
         Liability: pallet_robonomics_liability,
+        XcmInfo: pallet_robonomics_xcm_info,
 
         // Sudo. Usable initially.
         Sudo: pallet_sudo,
@@ -715,10 +722,10 @@ mod benches {
         [robonomics_datalog, Datalog]
         [robonomics_digital_twin, DigitalTwin]
         [robonomics_launch, Launch]
-        [robonomics_liability, Liability]
+        // [robonomics_liability, Liability]
         // [robonomics_lighthouse, Lighthouse]
         [robonomics_rws, RWS]
-        // [robonomics_xcm_info, XcmInfo]
+        [robonomics_xcm_info, XcmInfo]
     );
 }
 

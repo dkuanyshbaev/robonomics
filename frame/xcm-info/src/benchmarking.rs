@@ -26,4 +26,28 @@ use frame_system::RawOrigin;
 use parity_scale_codec::{Decode, Encode};
 use sp_std::prelude::*;
 
-const SEED: u32 = 0;
+#[benchmarks]
+mod benchmarks {
+    use super::*;
+    #[cfg(test)]
+    use frame_system::RawOrigin;
+    use staging_xcm::opaque::v3::MultiLocation;
+    use staging_xcm::v5::NetworkId;
+
+    #[benchmark]
+    fn set_relay_network() {
+        #[extrinsic_call]
+        _(RawOrigin::Root, NetworkId::Kusama);
+    }
+
+    #[benchmark]
+    fn set_asset_link() {
+        let location = MultiLocation::here();
+        let asset_id: T::AssetId = Default::default();
+
+        #[extrinsic_call]
+        _(RawOrigin::Root, asset_id, location);
+    }
+
+    impl_benchmark_test_suite!(XcmInfo, crate::tests::new_test_ext(), crate::tests::Runtime,);
+}

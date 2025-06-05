@@ -75,7 +75,7 @@ staging-xcm = { workspace = true }
 staging-xcm-builder = { workspace = true }
 staging-xcm-executor = { workspace = true }
 pallet-xcm = "18.0.0"
-pallet-xcm-info = { path = "../../frame/xcm-info", default-features = false }
+pallet-robonomics-xcm-info = { path = "../../frame/xcm-info", default-features = false }
 polkadot-parachain = { workspace = true }
 polkadot-primitives = { workspace = true }
 
@@ -124,6 +124,7 @@ std = [
   "pallet-robonomics-liability/std",
   "pallet-robonomics-lighthouse/std",
   "pallet-robonomics-rws/std",
+  "pallet-robonomics-xcm-info/std",
   "pallet-sudo/std",
   "cumulus-pallet-parachain-system/std",
   "cumulus-primitives-core/std",
@@ -136,7 +137,6 @@ std = [
   "staging-xcm-builder/std",
   "staging-xcm-executor/std",
   "pallet-xcm/std",
-  "pallet-xcm-info/std",
   "polkadot-parachain/std",
   "polkadot-primitives/std",
   "staging-parachain-info/std",
