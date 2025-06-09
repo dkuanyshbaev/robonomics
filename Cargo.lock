@@ -8050,6 +8050,7 @@ dependencies = [
  "hex-literal 0.3.4",
  "pallet-balances",
  "parity-scale-codec",
+ "robonomics-primitives",
  "scale-info",
  "sp-arithmetic 26.1.0",
  "sp-core 35.0.0",

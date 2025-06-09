@@ -625,6 +625,7 @@ impl pallet_robonomics_liability::Config for Runtime {
         pallet_robonomics_liability::technics::IPFS,
     >;
     type RuntimeEvent = RuntimeEvent;
+    // type WeightInfo = pallet_robonomics_liability::weights::RobonomicsWeight<Runtime>;
 }
 
 impl pallet_robonomics_xcm_info::Config for Runtime {
@@ -722,8 +723,7 @@ mod benches {
         [robonomics_datalog, Datalog]
         [robonomics_digital_twin, DigitalTwin]
         [robonomics_launch, Launch]
-        // [robonomics_liability, Liability]
-        // [robonomics_lighthouse, Lighthouse]
+        [robonomics_liability, Liability]
         [robonomics_rws, RWS]
         [robonomics_xcm_info, XcmInfo]
     );
