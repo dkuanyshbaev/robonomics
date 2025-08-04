@@ -59,56 +59,31 @@ mod benchmarks {
         let technics = IPFS {
             hash: IPFS_HASH.into(),
         };
-        let economics = SimpleMarket { price: 10 };
+        // let economics = SimpleMarket { price: 10 };
+        let economics = ();
         let pair = sr25519::Pair::from_string("//Alice", None).unwrap();
-        let sender = <MultiSignature as Verify>::Signer::from(pair.public()).into_account();
-        let signature: MultiSignature = (technics, economics)
-            .using_encoded(|params| AppCrypto::sign(params, caller.clone()))
-            .expect("unable to sign using runtime application key");
+        // let sender = <MultiSignature as Verify>::Signer::from(pair.public()).into_account();
 
-        let agreement = SignedAgreement {
+        let signature: MultiSignature =
+            MultiSignature::Sr25519(sp_core::sr25519::Signature::from_raw([0u8; 64]));
+
+        let signed = SignedAgreement {
             technics,
             economics,
-            promisee: sender.clone(),
-            promisor: sender.clone(),
+            // promisee: sender.clone(),
+            // promisor: sender.clone(),
+            promisee: caller.clone(),
+            promisor: caller.clone(),
             promisee_signature: signature.clone(),
             promisor_signature: signature.clone(),
         };
 
-        #[extrinsic_call]
-        _(RawOrigin::Signed(caller), agreement.clone());
-    }
+        let agreement = T::Agreement::decode(&mut &signed.encode()[..])
+            .expect("Failed to decode agreement for benchmarking");
 
-    // #[benchmark]
-    // fn finalize() {
-    //     let caller: T::AccountId = whitelisted_caller();
-    //
-    //     let technics = IPFS {
-    //         hash: IPFS_HASH.into(),
-    //     };
-    //     let economics = SimpleMarket { price: 10 };
-    //     let pair = sr25519::Pair::from_string("//Alice", None).unwrap();
-    //     let sender = <MultiSignature as Verify>::Signer::from(pair.public()).into_account();
-    //
-    //     let signature: MultiSignature = (technics, economics)
-    //         .using_encoded(|params| AppCrypto::sign(params, sender.clone()))
-    //         .expect("unable to sign using runtime application key");
-    //
-    //     let index = 0u32;
-    //     let payload = IPFS {
-    //         hash: IPFS_HASH.into(),
-    //     };
-    //
-    //     let report: T::Report = SignedReport {
-    //         index,
-    //         sender,
-    //         payload,
-    //         signature,
-    //     };
-    //
-    //     #[extrinsic_call]
-    //     _(RawOrigin::Signed(caller), report);
-    // }
+        #[extrinsic_call]
+        _(RawOrigin::Signed(caller), agreement);
+    }
 
     impl_benchmark_test_suite!(
         Liability,
